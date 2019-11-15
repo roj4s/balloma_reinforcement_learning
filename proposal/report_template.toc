@@ -1,0 +1,14 @@
+\contentsline {section}{\numberline {I}Introduction}{1}
+\contentsline {section}{\numberline {II}Problem Definition}{1}
+\contentsline {section}{\numberline {III}Proposed Solutions}{1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Your first solution}{1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Your second solution}{1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-C}}Your third solution}{1}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}1}Subsubsection Heading Here}{1}
+\contentsline {section}{\numberline {IV}Criteria for Assessing Solutions}{1}
+\contentsline {section}{\numberline {V}Research Methodology}{1}
+\contentsline {section}{\numberline {VI}Analysis and Interpretation}{1}
+\contentsline {section}{\numberline {VII}Conclusions and Recommendations}{2}
+\contentsline {section}{Appendix\nobreakspace {}A: What Goes in the Appendices}{2}
+\contentsline {section}{Appendix\nobreakspace {}B: Formatting the Appendices}{2}
+\contentsline {section}{References}{2}

@@ -32,7 +32,7 @@
 Udacity\\
 Capstone Project Proposal\\
 }
-\date{25/4/15}
+\date{14/10/2019}
 
 % make the title area
 \maketitle
@@ -43,22 +43,14 @@ Capstone Project Proposal\\
 
 \IEEEpeerreviewmaketitle
 \begin{abstract}
-The abstract does not only mention the paper, but is the original paper shrunken to approximately 200 words. It states the purpose, reports the information obtained, gives conclusions, and recommendations. In short, it summarizes the main points of the study adequately and accurately. It provides information from every major section in the body of the report in a dense and compact way. Past tense and active voice is appropriate when describing what was done. If there is any, it includes key statistical detail.  
 
-Depending on the format you use, the abstract may come on the title page or at the beginning of the main report.
+  This work presents a capstone project proposal to achieve a Nanodegree in Machine Learning from Udacity. The objective of this work is to construct a video game playing robot, through the use of Deep and Reinforcement Learning techniques. Also it should provide a methodology for test automation on game development process. This document provide descriptions on: \textit{a)} problem to be solved, \textit{b)} objectives, \textit{c)} context, \textit{d)} tools, \textit{e)} metrics and \textit{f)} techniques.
 
 \end{abstract}
 
 
-
-
-
 \section{Introduction}
-This will be a revised version of the introduction in your proposal.
-
-\section{Problem Definition}
-This will be a revised version of the problem definition in your proposal.
-
+Balloma is a single-player, android video game, developed by Black River Studios\footnote{http://blackriverstudios.net/} at brasilian SIDIA\footnote{https://www.sidia.com}.  During the game development process, after any new features are integrated, regression and functional tests must be executed in order to validate if new functionalities are properly working and side effects caused by new code have not appeared. 
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -75,16 +67,26 @@ This will be a revised version of the problem definition in your proposal.
 %
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.8\columnwidth]{trilece} 
-\caption{Simulation Results}
+\includegraphics[width=0.8\columnwidth]{img/balloma_cover.jpeg} 
+\caption{Balloma splash screen.}
 \label{fig_sim}
 \end{figure}
+
+Currently such tests are executed manually by humans, thus as functionalities' stack increases also does testing complexity and workload. In order to aim testing process this proposal presents a Proof Of Concept method for test automation using Deep Reinforcement Learning techniques. Next subsections presents further details on Balloma video game, the RL framework and  
+
+\section{Problem Definition}
+This will be a revised version of the problem definition in your proposal.
 
 % Note that IEEE typically puts floats only at the top, even when this
 % results in a large percentage of a column being occupied by floats.
 
-\section{Proposed Solutions}
-This may be a modified version of your proposal depending on previously carried out research or any feedback received.  
+\section{Balloma video game}
+  
+   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The main element in the scene is ball that the user should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen with a direction and speed he wants the ball takes.  Once the ball is positioned at the target position the scene ends, a score is given to the user and the next scene is unlocked. 
+   
+   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, faster scene finishing running times provides higher rewards. 
+ 
+   
 \subsection{Your first solution}
 Describe your first solution here.
 \subsection{Your second solution}
