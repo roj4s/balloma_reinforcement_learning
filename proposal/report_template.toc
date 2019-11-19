@@ -1,6 +1,6 @@
 \contentsline {section}{\numberline {I}Introduction}{1}
-\contentsline {section}{\numberline {II}Balloma video game}{1}
-\contentsline {section}{\numberline {III}Deep Reinforcement Learning}{1}
+\contentsline {section}{\numberline {II}Deep Reinforcement Learning}{1}
+\contentsline {section}{\numberline {III}Balloma video game}{2}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Your first solution}{2}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Your second solution}{2}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-C}}Your third solution}{2}

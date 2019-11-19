@@ -47,7 +47,7 @@ Capstone Project Proposal\\
 \IEEEpeerreviewmaketitle
 \begin{abstract}
 
-  This work presents a capstone project proposal to achieve a Nanodegree in Machine Learning from Udacity. The objective of this work is to construct a video game playing robot, through the use of Deep and Reinforcement Learning techniques. Also it should provide a methodology for test automation on game development process. This document provide descriptions on: \textit{a)} problem to be solved, \textit{b)} objectives, \textit{c)} context, \textit{d)} tools, \textit{e)} metrics and \textit{f)} techniques.
+  This work presents a capstone project proposal to achieve a Nanodegree in Machine Learning from Udacity. The objective of this work is to construct a video game playing robot, through the use of Deep Reinforcement Learning techniques. Also it should provide a methodology for test automation on game development process. This document provide descriptions on: \textit{a)} problem to be solved, \textit{b)} objectives, \textit{c)} context, \textit{d)} tools, \textit{e)} metrics and \textit{f)} techniques.
 
 \end{abstract}
 
@@ -75,15 +75,8 @@ Balloma is a single-player, android video game, developed by Black River Studios
 \label{fig_sim}
 \end{figure}
 
-Currently such tests are executed manually by humans, thus as functionalities' stack increases also does testing complexity and workload. In order to aim testing process this proposal presents a Proof Of Concept method for test automation using Deep Reinforcement Learning techniques. Next subsections presents further details on Balloma video game, the RL framework and how to use it for game automatic controlling.
+Currently such tests are executed manually by humans, thus as functionalities' stack increases also does testing complexity and workload. In order to aim testing process this proposal presents a Proof Of Concept method for test automation using Deep Reinforcement Learning techniques. Next sections presents further details on Balloma video game, the RL framework and how to use it for game automatic controlling.
 
-
-\section{Balloma video game}
-  
-   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The scene's main element is a ball a player should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen with a direction and speed he wants the ball to take.  Once the ball is positioned at target, scene ends, a score is given to user and next scene is unlocked. 
-   
-   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, lower scene completion running times provides higher rewards.
-   
    
 \section{Deep Reinforcement Learning}
 
@@ -95,13 +88,13 @@ Currently such tests are executed manually by humans, thus as functionalities' s
  
  Policy-based algorithms directly maps states and actions by a approximated policy function that represents the underlying stochastic distribution presented by environment's dynamics. While in the Value-based approach an heuristic should be defined to provide exploration behavior and avoid conditional randomness influenced by agent greediness, in Policy-based such heuristic is expressed in the policy function and is not necessarily fixed for each possible action-space setup. This approach is applicable to continuous action and state spaces.
  
- For both approaches, agent behavior is guided by an optimal policy $\pi_*(s, a, \theta)$ evaluated by objective function $J(\theta)=\mathbb{E}[R(\tau)]$ of policy parameters $\theta$, based on state-action-reward expectations on trajectory $\tau=S_0, A_0, R_1, S_1, ... $ drawn from a probability distribution \textbf{$p(s',r|s, a)$}. In such case is convenient using the \textbf{Bellman Expectation Equation} to represent expected return of taking an action $a_t$ while in state $s_t$ and following a policy $\pi$:  
+ For both approaches, agent behavior is guided by an optimal policy $\pi_*(s, a, \theta)$ evaluated by objective function $J(\theta)=\mathbb{E}[R(\tau)]$ of policy parameters $\theta$, based on state-action-reward expectations on trajectory $\tau=S_0, A_0, R_1, S_1, ... $ drawn from a probability distribution \textbf{$p(s',r|s, a)$}. In such case is convenient using the \textbf{Bellman Expectation Equation} \cite{bellman_equation} to represent expected return of taking an action $a_t$ while in state $s_t$ and following a policy $\pi$:  
  
  \begin{equation}
  	Q^\pi(s_t, a_t) = \mathbb{E}_{r_t, s_{t+1} \sim E} [r(s_t, a_t) + \gamma\mathbb{E}_{a_{t+1} \sim \pi} [Q^\pi(s_{t+1}, a_{t+1})]]
  \end{equation}
  
- In this proposal I intend to apply a hybrid approach for RL called Deep Deterministic Policy Gradients (DDPG). It follows the actor-critic algorithm DPG in which the agent's behavior is represented by function $\mu(s|\theta^\mu)$, called the actor, that is evaluated by the critic, a non-linear action-value function $Q(s,a)$ parametrized by $\theta^Q$, adjusted by minimizing the loss:
+ In this proposal I intend to apply a hybrid approach for RL called Deep Deterministic Policy Gradients (DDPG) \cite{ddpg_2015}. It follows the actor-critic \cite{actor_critic_2000} algorithm DPG \cite{silver_2004} in which the agent's behavior is represented by function $\mu(s|\theta^\mu)$, called the actor, that is evaluated by the critic, a non-linear action-value function $Q(s,a)$ parametrized by $\theta^Q$, adjusted by minimizing the loss:
  
  \begin{equation}
    L(\theta^Q) = \mathbb{E}_{s_t \sim \rho^\beta, a_t \sim, r_t \sim E}[(Q(s_t,a_t|\theta^Q)- y_t)^2]
@@ -129,8 +122,14 @@ Actor function $\mu(s|\theta^\mu)$ specifies the agent's policy by deterministic
  	\mu'(s_t)=\mu(s_t|\theta_t^\mu ) + \eta
  \end{equation}
  
-Training follows an episodic process similar to Q-Learning. In each episode a set of agent-environment interactions, represented as a transition tuple $(s_t, a_t, r_t, s_{t+1})$ are stored in a replay buffer $R$. A set of tuples are sampled from $R$ and used to apply the updates previously explained in this section. This iterative process can be truncated based on optimization or time constraining conditions are met.
+Training follows an episodic process similar to Q-Learning. In each episode a set of agent-environment interactions, represented as a transition tuple $(s_t, a_t, r_t, s_{t+1})$ are stored in a replay buffer $R$ \cite{replay_buffer_2015}. A set of tuples are sampled from $R$ and used to apply the updates previously explained in this section. This iterative process can be truncated based on optimization or time constraining conditions are met.
 
+
+\section{Balloma video game}
+  
+   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The scene's main element is a ball a player should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen with a direction and speed he wants the ball to take.  Once the ball is positioned at target, scene ends, a score is given to user and next scene is unlocked. 
+   
+   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, lower scene completion running times provides higher rewards.
  
    
 \subsection{Your first solution}
@@ -229,16 +228,26 @@ Each appendix needs to be given a letter (A, B, C, etc.) and a title. \LaTeX wil
 \begin{thebibliography}{1}
 % Here are a few examples of different citations 
 % Book
-\bibitem{kopka_1999} % Note the label in the curly brackets. Use the cite the source; e.g., \cite{kopka_latex}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
-\bibitem{horowitz_2005}D.~Horowitz, \emph{End of Time}. New York, NY, USA: Encounter Books, 2005. [E-book] Available: ebrary, \url{http://site.ebrary.com/lib/sait/Doc?id=10080005}. Accessed on: Oct. 8, 2008.
-% Article from database
-\bibitem{castlevecchi_2008}D.~Castelvecchi, ``Nanoparticles Conspire with Free Radicals'' \emph{Science News}, vol.174, no. 6, p. 9, September 13, 2008. [Full Text]. Available: Proquest, \url{http://proquest.umi.com/pqdweb?index=52&did=1557231641&SrchMode=1&sid=3&Fmt=3&VInst=PROD&VType=PQD&RQT=309&VName=PQD&TS=1229451226&clientId=533}. Accessed on: Aug.~3, 2014.
-% Conference Paper from the Internet
-\bibitem{lach_2010}J.~Lach, ``SBFS: Steganography based file system,'' in \emph{Proceedings of the 2008 1st International Conference on Information Technology, IT 2008, 19-21 May 2008, Gdansk, Poland.} Available: IEEE Xplore, \url{http://www.ieee.org}. [Accessed: 10 Sept. 2010].
-% Web page, no author
-\bibitem{a_laymans_explanation}``A `layman's' explanation of Ultra Narrow Band technology,'' Oct.~3, 2003. [Online]. Available: \url{http://www.vmsk.org/Layman.pdf}. [Accessed: Dec.~3, 2003]. 
+
+\bibitem{ddpg_2015}
+  Lillicrap, Timothy P., et al. "Continuous control with deep reinforcement learning." arXiv preprint arXiv:1509.02971 (2015).
+  
+  \bibitem {actor_critic_2000} 
+  Konda, Vijay R., and John N. Tsitsiklis. "Actor-critic algorithms." Advances in neural information processing systems. 2000.
+  
+\bibitem{silver_2004}
+  David~Silver, Guy~Lever, Nicolas~Heess, Thomas~Degris, Daan~Wierstra, and Martin~Riedmiller. 2014. Deterministic policy gradient algorithms. In Proceedings of the 31st International Conference on International Conference on Machine Learning - Volume 32 (ICML'14), Eric P. Xing and Tony Jebara (Eds.), Vol. 32. JMLR.org I-387-I-395.
+  
+  \bibitem{replay_buffer_2015}
+  
+  Mnih, Volodymyr, Kavukcuoglu, Koray, Silver, David, Rusu, Andrei A, Veness, Joel, Bellemare,
+Marc G, Graves, Alex, Riedmiller, Martin, Fidjeland, Andreas K, Ostrovski, Georg, et al. Humanlevel control through deep reinforcement learning. Nature, 518(7540):529–533, 2015.
+
+\bibitem{bellman_equation}
+
+(2011) Bellman Equation. In: Sammut C., Webb G.I. (eds) Encyclopedia of Machine Learning. Springer, Boston, MA
+  
+ 
 \end{thebibliography}
 
 % This is a hand-made bibliography. If you want to use a BibTeX file, you're on your own ;-)
