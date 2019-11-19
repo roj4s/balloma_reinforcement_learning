@@ -14,8 +14,9 @@
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables for horizontal lines
 \usepackage{graphicx}
 \usepackage{amsfonts}
+\usepackage{amsmath}
 \usepackage{amssymb}
-
+\usepackage{stackengine}
 
 \hyphenation{op-tical net-works semi-conduc-tor} % Corrects some bad hyphenation 
 
@@ -100,7 +101,7 @@ Currently such tests are executed manually by humans, thus as functionalities' s
  	Q^\pi(s_t, a_t) = \mathbb{E}_{r_t, s_{t+1} \sim E} [r(s_t, a_t) + \gamma\mathbb{E}_{a_{t+1} \sim \pi} [Q^\pi(s_{t+1}, a_{t+1})]]
  \end{equation}
  
- In this proposal I intend to apply a hybrid approach for RL called Deep Deterministic Policy Gradients (DDPG). In DDPG it is used non-linear action-value function to obtain the expected reward, parametrized by $\theta^Q$ and is obtained by minimizing the loss:
+ In this proposal I intend to apply a hybrid approach for RL called Deep Deterministic Policy Gradients (DDPG). It follows the actor-critic algorithm DPG in which the agent's behavior is represented by function $\mu(s|\theta^\mu)$, called the actor, that is evaluated by the critic, a non-linear action-value function $Q(s,a)$ parametrized by $\theta^Q$, adjusted by minimizing the loss:
  
  \begin{equation}
    L(\theta^Q) = \mathbb{E}_{s_t \sim \rho^\beta, a_t \sim, r_t \sim E}[(Q(s_t,a_t|\theta^Q)- y_t)^2]
@@ -112,9 +113,24 @@ Currently such tests are executed manually by humans, thus as functionalities' s
  	y_t = r(s_t, a_t) + \gamma Q(s_{t+1}, \mu(s_{t+1})|\theta^Q)
  \end{equation}
  
-In DDPG, agent's policy is expressed by a parametrized function $\mu(s|\theta^\mu)$
+Actor function $\mu(s|\theta^\mu)$ specifies the agent's policy by deterministically mapping states to a specific action. It is adjusted to maximize the expected reward from a start distribution $J=\mathbb{E}_{r_i, s_i \sim E, a_i \sim \pi}[R_1]$. That is attained by updating parameters $\theta^\mu$ following the policy's performance gradients, expressed as:
 
+\begin{equation}
+\begin{split}
+	\nabla_{\theta^\mu} \approx \mathbb{E}_{s_t \sim \rho^\beta}[\nabla_{\theta^\mu}Q(s,a|\theta^Q)|_{s=s_t, a=\mu(s_t|\theta^\mu)}] \\	
+	= \mathbb{E}_{s_t \sim \rho ^ \beta}[\nabla_a Q(s,a|\theta^Q)|_{s=s_t, a=\mu(s_t)} \nabla_{\theta_\mu} \mu(s|\theta^\mu)|_{s=s_t}]
+	\end{split}
+\end{equation}
+
+ Both actor and critic functions are expressed by neuronal networks, updated following an approximation to a supervised learning approach. For that matter, target networks $\mu'(s|\theta^{u'})$ and $Q'(s,a|\theta^{Q'})$ are created, which are soft copies of actor and critic networks respectively. That soft copy is made from updated parameters as follows: $\theta'\leftarrow \tau \theta + (1-\tau)\theta'$ with $\tau \ll 1$
  
+ In order to provide exploration capabilities, during training, a different policy than that of the agent is used, obtained by adding noise sampled from a noise process $\eta$ to the actor function. Such exploration policy is expressed as follows: 
+ \begin{equation}
+ 	\mu'(s_t)=\mu(s_t|\theta_t^\mu ) + \eta
+ \end{equation}
+ 
+Training follows an episodic process similar to Q-Learning. In each episode a set of agent-environment interactions, represented as a transition tuple $(s_t, a_t, r_t, s_{t+1})$ are stored in a replay buffer $R$. A set of tuples are sampled from $R$ and used to apply the updates previously explained in this section. This iterative process can be truncated based on optimization or time constraining conditions are met.
+
  
    
 \subsection{Your first solution}
