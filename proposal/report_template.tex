@@ -13,6 +13,8 @@
 \usepackage[utf8]{inputenc} % Allows Turkish characters.
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables for horizontal lines
 \usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 
 
 \hyphenation{op-tical net-works semi-conduc-tor} % Corrects some bad hyphenation 
@@ -72,19 +74,47 @@ Balloma is a single-player, android video game, developed by Black River Studios
 \label{fig_sim}
 \end{figure}
 
-Currently such tests are executed manually by humans, thus as functionalities' stack increases also does testing complexity and workload. In order to aim testing process this proposal presents a Proof Of Concept method for test automation using Deep Reinforcement Learning techniques. Next subsections presents further details on Balloma video game, the RL framework and  
+Currently such tests are executed manually by humans, thus as functionalities' stack increases also does testing complexity and workload. In order to aim testing process this proposal presents a Proof Of Concept method for test automation using Deep Reinforcement Learning techniques. Next subsections presents further details on Balloma video game, the RL framework and how to use it for game automatic controlling.
 
-\section{Problem Definition}
-This will be a revised version of the problem definition in your proposal.
-
-% Note that IEEE typically puts floats only at the top, even when this
-% results in a large percentage of a column being occupied by floats.
 
 \section{Balloma video game}
   
-   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The main element in the scene is ball that the user should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen with a direction and speed he wants the ball takes.  Once the ball is positioned at the target position the scene ends, a score is given to the user and the next scene is unlocked. 
+   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The scene's main element is a ball a player should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen with a direction and speed he wants the ball to take.  Once the ball is positioned at target, scene ends, a score is given to user and next scene is unlocked. 
    
-   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, faster scene finishing running times provides higher rewards. 
+   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, lower scene completion running times provides higher rewards.
+   
+   
+\section{Deep Reinforcement Learning}
+
+ Reinforcement Learning (RL) is a field of Machine Learning that studies autonomous interactions among software agents and environments, and the way an agent can enhance its behavioral rules (policy) in order to maximize the reward it obtains from an environment. That is, at time step $t$, agent takes action $a_t$ on a given environment $E$ with transition dynamics $p(s_{t+1}|s_t, a_t)$ and current state $s_t$ obtaining a reward $r_t$ from a reward function $r(s_t, a_t)$ and transforming current state into $s_{t+1}$.
+ 
+ Currently RL proposes two main approaches to represent an agent behavioral rules: a) Value-based and b) Policy-based algorithms. 
+ 
+ In value-based algorithms it is used a function called action-value ($q_*(s,a)$) that contains the expected cumulative reward of performing a given action while in a given environment's state. Such function can be used by the agent to decide which action to take in a given state by selecting from $q$ the action that maximizes reward with a given probability $\epsilon$ that allows a desired exploration behavior so as it is applicable for non-deterministic environment dynamics. This approach is constrained to discrete action and state spaces.
+ 
+ Policy-based algorithms directly maps states and actions by a approximated policy function that represents the underlying stochastic distribution presented by environment's dynamics. While in the Value-based approach an heuristic should be defined to provide exploration behavior and avoid conditional randomness influenced by agent greediness, in Policy-based such heuristic is expressed in the policy function and is not necessarily fixed for each possible action-space setup. This approach is applicable to continuous action and state spaces.
+ 
+ For both approaches, agent behavior is guided by an optimal policy $\pi_*(s, a, \theta)$ evaluated by objective function $J(\theta)=\mathbb{E}[R(\tau)]$ of policy parameters $\theta$, based on state-action-reward expectations on trajectory $\tau=S_0, A_0, R_1, S_1, ... $ drawn from a probability distribution \textbf{$p(s',r|s, a)$}. In such case is convenient using the \textbf{Bellman Expectation Equation} to represent expected return of taking an action $a_t$ while in state $s_t$ and following a policy $\pi$:  
+ 
+ \begin{equation}
+ 	Q^\pi(s_t, a_t) = \mathbb{E}_{r_t, s_{t+1} \sim E} [r(s_t, a_t) + \gamma\mathbb{E}_{a_{t+1} \sim \pi} [Q^\pi(s_{t+1}, a_{t+1})]]
+ \end{equation}
+ 
+ In this proposal I intend to apply a hybrid approach for RL called Deep Deterministic Policy Gradients (DDPG). In DDPG it is used non-linear action-value function to obtain the expected reward, parametrized by $\theta^Q$ and is obtained by minimizing the loss:
+ 
+ \begin{equation}
+   L(\theta^Q) = \mathbb{E}_{s_t \sim \rho^\beta, a_t \sim, r_t \sim E}[(Q(s_t,a_t|\theta^Q)- y_t)^2]
+ \end{equation}
+ 
+ where
+ 
+ \begin{equation}
+ 	y_t = r(s_t, a_t) + \gamma Q(s_{t+1}, \mu(s_{t+1})|\theta^Q)
+ \end{equation}
+ 
+In DDPG, agent's policy is expressed by a parametrized function $\mu(s|\theta^\mu)$
+
+ 
  
    
 \subsection{Your first solution}
