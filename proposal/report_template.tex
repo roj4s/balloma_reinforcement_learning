@@ -127,9 +127,41 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
 
 \section{Balloma video game}
   
-   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The scene's main element is a ball a player should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen with a direction and speed he wants the ball to take.  Once the ball is positioned at target, scene ends, a score is given to user and next scene is unlocked. 
+   Balloma is a single-player video game that runs on Android devices. It is composed of several scenes that initially appears locked and gets unlocked as the user completes unlocked scene's objective. 
    
-   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, lower scene completion running times provides higher rewards.
+   Each scene contains a constrained little terrain world with elements arranged and boundaries that if crossed makes the scene end. The scene's main element is a ball the player should control and carry to a remarked target position in the scene. To control such ball the player should touch and swipe the device's screen inputing a direction and speed he wants the ball to take. Once the ball is positioned at target, scene ends, a score is given to user and next scene is unlocked. 
+   
+   \begin{figure}[!h]
+		\centering
+		\includegraphics[width=0.9\columnwidth]{img/balloma_scene.jpg} 
+		\caption{Balloma's scene sample. Elements of scene are: a) The ball (blue), b) Floating elements (green), c) Score records (red), d) Target position (yellow)}
+		\label{fig_scene}
+	\end{figure}
+   
+   While the user carries the ball to target he can make the ball go trough floating elements in the scene which makes the score increase. Also a timer is included in the scene which influences the final score, lower scene's completion running times provides higher rewards.
+   
+   Figure \ref{fig_scene} presents the game's first scene which appears unlocked by default. In Figure \ref{fig_scene} the ball is bounded by a blue box. The blue diamonds bounded with a green box appears floating in the scene, if reached by the ball makes the score (upper left red box) increase. Target position is remarked inside a yellow box. Also there is a timer (lower left corner red box) that influences the final score.
+   
+   \section{Environment}
+   
+	An interface is implemented to provide a RL suitable environment by which the agent can interact with the game to construct the optimized policy. Since the game runs in Android, the environment should provide a controlling interface with an android physical or virtual device. Such functionality can be attained through the Android Debug Bridge (adb\footnote{https://developer.android.com/studio/command-line/adb}). 
+	
+	In this proposal the states are represented by raw scene frames of 240x240. It means at each time step $t$ the environment is at state $s_t \in \mathbb{R}^3$ formatted as a tensor of shape $(240, 240, 3)$. A similar approach was presented in \cite{ddpg_2015} and \cite{replay_buffer_2015}, however scenes in those works are 2D spaces and in this case it is 3D. Frames are cropped to exclude score indicators and focus on more important pixels.
+	
+	On each time step the agent can chose to take an action $a_t \in \mathbb{R}^4$. Actions are presented as a tuple $a_t=(x_0, x_1, y_0, y_1, \nu)$ containing swipe attributes: \textit{a)} $x_0$ starting swipe $x$ coordinate, \textit{b)} $x_1$ final swipe $x$ coordinate, \textit{c)} $y_0$ starting swipe $y$ coordinate, \textit{d)} $y_1$ final swipe $y$ coordinate and \textit{e)} swipe velocity $\nu$.
+	
+	Each episode starts with the first swipe inputted by the agent. If the balls falls or get to target position environment is set into a terminal state. Also it will be constrained in time to avoid long episodes. 
+	
+	\section{Reward function}
+	
+	At each time step, after the agent choses an action $a_t$ and such action is applied to environment, a reward $r_t$ is observed. Such reward is computed taking into account two coefficients: \textit{a)} the ratio of gathered floating diamonds over all such elements in the scene($\omega$) and \textit{b)} episode time passed since it started ($\varphi$). Then reward is calculated as:
+	
+	\begin{equation}
+	  r(s_t, a_t) = \dfrac{\omega_t}{\varphi_t}
+	\end{equation}
+	
+	  Such coefficients appears as elements of the scene at a fixed frame position. It should be cropped and processed so as to convert such pixels into a suitable representation of its digits. In order to extract the score on each time step from those scene elements, in this work it will be trained a digit recognizer on the well known MNIST handwritten digit database \cite{mnist}.	
+	
  
    
 \subsection{Your first solution}
@@ -246,6 +278,10 @@ Marc G, Graves, Alex, Riedmiller, Martin, Fidjeland, Andreas K, Ostrovski, Georg
 \bibitem{bellman_equation}
 
 (2011) Bellman Equation. In: Sammut C., Webb G.I. (eds) Encyclopedia of Machine Learning. Springer, Boston, MA
+
+\bibitem{mnist}
+
+LeCun, Y. & Cortes, C. (2010), 'MNIST handwritten digit database', .
   
  
 \end{thebibliography}

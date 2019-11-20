@@ -1,14 +1,16 @@
 \contentsline {section}{\numberline {I}Introduction}{1}
 \contentsline {section}{\numberline {II}Deep Reinforcement Learning}{1}
 \contentsline {section}{\numberline {III}Balloma video game}{2}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Your first solution}{2}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Your second solution}{2}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-C}}Your third solution}{2}
-\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}1}Subsubsection Heading Here}{2}
-\contentsline {section}{\numberline {IV}Criteria for Assessing Solutions}{2}
-\contentsline {section}{\numberline {V}Research Methodology}{2}
-\contentsline {section}{\numberline {VI}Analysis and Interpretation}{2}
-\contentsline {section}{\numberline {VII}Conclusions and Recommendations}{3}
-\contentsline {section}{Appendix\nobreakspace {}A: What Goes in the Appendices}{3}
-\contentsline {section}{Appendix\nobreakspace {}B: Formatting the Appendices}{3}
-\contentsline {section}{References}{3}
+\contentsline {section}{\numberline {IV}Environment}{2}
+\contentsline {section}{\numberline {V}Reward function}{2}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-A}}Your first solution}{3}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Your second solution}{3}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Your third solution}{3}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-C}1}Subsubsection Heading Here}{3}
+\contentsline {section}{\numberline {VI}Criteria for Assessing Solutions}{3}
+\contentsline {section}{\numberline {VII}Research Methodology}{3}
+\contentsline {section}{\numberline {VIII}Analysis and Interpretation}{3}
+\contentsline {section}{\numberline {IX}Conclusions and Recommendations}{3}
+\contentsline {section}{Appendix\nobreakspace {}A: What Goes in the Appendices}{4}
+\contentsline {section}{Appendix\nobreakspace {}B: Formatting the Appendices}{4}
+\contentsline {section}{References}{4}
