@@ -17,6 +17,14 @@ def put(size, angle, duration, device_width=1440, device_height=2960):
                      str(y0),
                      str(x1), str(y1), str(duration), ";"])
 
+def on_game(frame):
+    # TODO:
+    return True
+
+
+def get_timelapse_frame(timelapse, width=240, height=240):
+    # TODO:
+    return np.random.random((width, height, 3))
 
 
 if __name__ == "__main__":
