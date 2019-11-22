@@ -3,4 +3,5 @@
 \contentsline {section}{\numberline {III}Balloma video game}{2}
 \contentsline {section}{\numberline {IV}Environment}{2}
 \contentsline {section}{\numberline {V}Reward function}{2}
+\contentsline {section}{\numberline {VI}Benchmark Model}{3}
 \contentsline {section}{References}{3}

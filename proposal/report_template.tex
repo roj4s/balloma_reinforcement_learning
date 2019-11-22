@@ -161,6 +161,12 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
 	\end{equation}
 	
 	  Such coefficients appears as elements of the scene at a fixed frame position. It should be cropped and processed so as to convert such pixels into a suitable representation of its digits. In order to extract the score on each time step from those scene elements, in this work it will be trained a digit recognizer on the well known MNIST handwritten digit database \cite{mnist}.	
+	  
+	  \section{Benchmark Model}
+	  
+	  Previous researches have addressed video game playing agents with reinforcement learning. Mnih et al.  \cite{replay_buffer_2015} created Atari video game playing robots trough the use of an adaptation to Deep Q-Learning. This approach is considered as Deep Reinforcement Learning since makes use of neuronal networks to map states to actions directly. The method was tested on 49 Atari games achieving professional human players comparable performance.
+	  
+	  Deep Deterministic Policy Gradients \cite{ddpg_2015}, the method presented in this work, was used by its authors to create an agent that plays Torc, a racing video game. They compared effectiveness of the method when applied on low-dimensional features like acceleration, braking and steering and with high-order features like pixel representations (i.e game raw frames). It was demonstrated by experimentation that similar performance is attained for both features presentations.
 	
  
   
