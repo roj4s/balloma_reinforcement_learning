@@ -26,9 +26,9 @@ a PoC of a RL setup on Baloma Android Video Game.
    - Plug android device to PC and make sure it is usable by adb `adb devices` shows online device.
    - Install lib dependencies `pip install -r requirements.txt`.
    - Configure and start [minicap](https://github.com/openstf/minicap#usage) (that's actually easy).
-   - Install [Balloma] (https://play.google.com/store/apps/details?id=net.blackriverstudios.balloma&hl=en) game in your android device.
-    - Open Balloma and start any scene.
-    - Run `python task.py`.
+   - Install [Balloma](https://play.google.com/store/apps/details?id=net.blackriverstudios.balloma&hl=en) game in your android device.
+   - Open Balloma and start any scene.
+   - Run `python task.py`.
 
    It should start inputting random swipes onto the device. If scene completes for some reason (e.g the ball falls out the miniworld) it will restart automatically.
 
