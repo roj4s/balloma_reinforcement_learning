@@ -20,14 +20,18 @@ def put(size, angle, duration, device_width=1440, device_height=2960):
                      str(x1), str(y1), str(duration), ";"])
 
 def on_game(frame, el_coord, el_img, threshold=4):
+    '''
+        Currently checking by comparing images.
+        It will be replaced by a less device-dependent approach.
+    '''
     cut = frame[el_coord[0]:el_coord[1], el_coord[2]:el_coord[3]]
     cut = cv2.cvtColor(cut, cv2.COLOR_BGR2GRAY)
     _, cut = cv2.threshold(cut, 200, 255, cv2.THRESH_BINARY)
-    cv2.imshow('cut', cut)
+    #cv2.imshow('cut', cut)
     el = cv2.imread(el_img)
     el = cv2.cvtColor(el, cv2.COLOR_BGR2GRAY)
     _, el = cv2.threshold(el, 200, 255, cv2.THRESH_BINARY)
-    cv2.imshow('el', el)
+    #cv2.imshow('el', el)
     dif = np.array(cut - el).flatten()
     return sum(dif) > threshold
 
