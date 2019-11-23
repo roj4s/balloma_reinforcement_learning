@@ -19,6 +19,9 @@ def put(size, angle, duration, device_width=1440, device_height=2960):
                      str(y0),
                      str(x1), str(y1), str(duration), ";"])
 
+def tap(x, y):
+    sp.call(['adb', 'shell', 'input', 'tap', str(x), str(y)])
+
 def on_game(frame, el_coord, el_img, threshold=4):
     '''
         Currently checking by comparing images.

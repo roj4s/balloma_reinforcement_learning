@@ -1,5 +1,5 @@
 import numpy as np
-from control import put, on_game
+from control import put, on_game, tap
 import time
 from threading import Event
 from queue import Queue
@@ -70,24 +70,30 @@ class Environment:
     def reset(self):
         """
             Put the environment back on game
+            Currently working with fixed coords, not elegant though, futurely
+            using object detection ...
         """
-        # TODO
-        return True
+        restart_coords = self.device_ref_elements_data['try_again']['restart_btn_coords']
+        tap(restart_coords[0], restart_coords[1])
 
 if __name__ == "__main__":
     import random
     try_again_el_data = {
         'coords': [45, 60, 118, 180],
-        'img_path': 'data/s8_cut_try_again.png'
+        'img_path': 'data/s8_cut_try_again.png',
+        'restart_btn_coords': [640, 1110]
     }
     env = Environment(device_ref_elements_data={'try_again': try_again_el_data})
 
-    done = False
-    while not done:
-        angle = random.randint(0, 359)
-        v_size = random.randint(1, 50)
-        speed = random.randint(100, 2000)
-        ns, rw, done = env.step(v_size, angle, speed, show_frames=False)
+    for i in range(10):
+        done = False
+        while not done:
+            angle = random.randint(0, 359)
+            v_size = random.randint(1, 50)
+            speed = random.randint(100, 2000)
+            ns, rw, done = env.step(v_size, angle, speed, show_frames=False)
+
+        env.reset()
 
     cv2.destroyAllWindows()
 
