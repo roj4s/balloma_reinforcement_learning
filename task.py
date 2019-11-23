@@ -1,15 +1,21 @@
 import numpy as np
 from control import put, get_timelapse_frame, on_game
 import time
+from threading import Event
+from queue import Queue
+from android_screen import AndroidScreenBuffer
 
 
-class Environment():
+class Environment:
     """Environment, defines the goal and provides feedback to the agent."""
-    def __init__(self):
+    def __init__(self, width=240, height=240, minicap_port=1313):
+        self.asb = AndroidScreenBuffer(minicap_port=minicap_port)
         self.action_repeat = 3
-        self.state_frame_width = 240
-        self.state_frame_height = 240
-        self.state_size = self.action_repeat * self.state_frame_width * self.state_frame_height
+        self.state_frame_width = width
+        self.state_frame_height = height
+        self.device_evt = Event()
+        self.state_size = self.action_repeat * self.state_frame_width * self.state_frame_height * 3
+        self.asb.run()
 
     def get_reward(self, state_frame):
         """
