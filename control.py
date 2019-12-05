@@ -41,7 +41,7 @@ def transform_action(action, action_range, action_low):
     return action * action_range + action_low
 
 if __name__ == "__main__":
-    from ddpg import OUNoise
+    from ounoise import OUNoise
     from asb import AndroidScreenBuffer
     from matplotlib import pyplot as plt
     #buff = AndroidScreenBuffer()
@@ -65,14 +65,13 @@ if __name__ == "__main__":
                           dtype='uint8')
         values[i] = action
 
+    print(values.shape)
+
     fig, ax = plt.subplots(3, sharex='col', sharey='row')
     for i in range(3):
-        ax[i].plot(iis, values[i])
+        ax[i].plot(iis, values[:,i])
 
+    plt.grid()
     plt.show()
 
-        #put(*action, device_width=w, device_height=h)
-
-
-
-
+    #put(*action, device_width=w, device_height=h)
