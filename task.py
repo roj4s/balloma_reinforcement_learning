@@ -77,12 +77,21 @@ class Environment:
         tap(restart_coords[0], restart_coords[1])
 
 if __name__ == "__main__":
+    # Coords based on a 296x144 screen
+
     import random
     try_again_el_data = {
         'coords': [45, 60, 118, 180],
         'img_path': 'data/s8_cut_try_again.png',
         'restart_btn_coords': [640, 1110]
     }
+
+    scores = {
+        'diamonds_gathered': [11, 27, 24, 35],
+        'dimamonds_total': [12, 26, 48, 59],
+        'time_start': [118, 132, 30, 40]
+    }
+
     env = Environment(device_ref_elements_data={'try_again': try_again_el_data})
 
     for i in range(10):
@@ -91,7 +100,7 @@ if __name__ == "__main__":
             angle = random.randint(0, 359)
             v_size = random.randint(1, 50)
             speed = random.randint(100, 2000)
-            ns, rw, done = env.step(v_size, angle, speed, show_frames=False)
+            ns, rw, done = env.step(v_size, angle, speed, show_frames=True)
 
         env.reset()
 
