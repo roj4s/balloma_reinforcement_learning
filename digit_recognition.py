@@ -17,7 +17,7 @@ class DigitsMatcher:
         _, cut = cv2.threshold(cut, 200, 255, cv2.THRESH_BINARY)
         return cut
 
-    def match(self, cropped_frame):
+    def match(self, cropped_frame, threshold=10):
         cropped_bw = self.preprocess_bw(cropped_frame)
         cropped_bw_shape = cropped_bw.shape
         d = None
@@ -26,6 +26,10 @@ class DigitsMatcher:
             dig = cv2.resize(dig, (cropped_bw_shape[1], cropped_bw_shape[0]))
             dif = np.array(cropped_bw - dig).flatten()
             s = sum(dif)
+
+            if s > threshold:
+                continue
+
             if s < m:
                 m = s
                 d = i
