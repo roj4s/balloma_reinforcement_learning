@@ -5,6 +5,7 @@ from threading import Event
 from queue import Queue
 from android_screen import AndroidScreenBuffer
 import cv2
+from digit_recognition import DigitsMatcher
 
 
 class Environment:
@@ -19,7 +20,9 @@ class Environment:
         self.device_evt = Event()
         self.state_size = self.action_repeat * self.state_frame_width * self.state_frame_height * 3
         self.device_ref_elements_data = device_ref_elements_data
+        self.digits_matcher = DigitsMatcher(self.device_ref_elements_data['scores']['digits_mask_addr'])
         self.asb.run()
+        self.episode_start_time = None
 
     def get_reward(self, state_frame):
         """
@@ -28,7 +31,22 @@ class Environment:
             float representation and computes reward.
         """
         # TODO:
-        return np.random.random()
+        t = time.time() - self.episode_start_time
+        match_threshold = self.device_ref_elements_data['scores']['match_threshold']
+        episode_time_limit = self.device_ref_elements_data['scores']['episode_time_limit']
+        diamonds_total = self.device_ref_elements_data['scores']['diamonds_total']
+        diamonds_importance = self.device_ref_elements_data['scores']['diamonds_importance']
+        time_importance = self.device_ref_elements_data['scores']['time_importance']
+        y1, y2, x1, x2 = self.device_ref_elements_data['scores']['coords_diamonds_gathered']
+        cropped_dig = state_frame[y1:y2, x1:x2]
+        diamonds_gathered = self.digits_matcher.match(state_frame,
+                                                      threshold=match_threshold)
+        if diamonds_gathered is None:
+            #TODO: Enhance this
+            return -1
+
+        return diamonds_importance * (diamonds_gathered/diamonds_total) - time_importance * t/episode_time_limit
+
 
     def step(self, vector_size, angle, speed, show_frames=False):
         """
@@ -39,6 +57,9 @@ class Environment:
             reward, next state and check if scene was completed.
         """
         # TODO:
+        if self.episode_start_time is None:
+            self.episode_start_time = time.time()
+
         reward = 0
         states = []
         for _ in range(self.action_repeat):
@@ -74,6 +95,7 @@ class Environment:
             using object detection ...
         """
         restart_coords = self.device_ref_elements_data['try_again']['restart_btn_coords']
+        self.episode_start_time = None
         tap(restart_coords[0], restart_coords[1])
 
 if __name__ == "__main__":
@@ -87,12 +109,18 @@ if __name__ == "__main__":
     }
 
     scores = {
-        'diamonds_gathered': [11, 27, 24, 35],
-        'dimamonds_total': [12, 26, 48, 59],
-        'time_start': [118, 132, 30, 40]
+        'coords_diamonds_gathered': [11, 27, 24, 35],
+        'digits_mask_addr': '/home/neo/dev/balloma_rl_agent/misc/digits',
+        'match_threshold': 10,
+        'time_importance': 0.7,
+        'diamond_importance': 0.3,
+        'episode_time_limit': 60,
+        'diamonds_total': 7
+
     }
 
-    env = Environment(device_ref_elements_data={'try_again': try_again_el_data})
+    env = Environment(device_ref_elements_data={'try_again': try_again_el_data,
+                                                'scores': scores})
 
     for i in range(10):
         done = False
