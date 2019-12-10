@@ -19,7 +19,8 @@ class Environment:
         self.action_repeat = 3
         self.action_low = np.array([1, 0, 1])
         self.action_high = np.array([10, 359, 2000])
-        self.action_range = action_high - action_low
+        self.action_size = self.action_low.shape[0]
+        self.action_range = self.action_high - self.action_low
         self.device_ref_elements_data = device_ref_elements_data
         self.visible_state_area_data = self.device_ref_elements_data['scores']['state_area']
         self.state_frame_width = self.visible_state_area_data[3] - self.visible_state_area_data[2]
@@ -31,7 +32,7 @@ class Environment:
         self.asb.run()
         self.episode_start_time = None
 
-    def get_reward(self, state_frame):
+    def get_reward(self, frame):
         """
             Given a state frame extracts reward
             involved view components, converts it to
@@ -51,7 +52,7 @@ class Environment:
         diamonds_importance = self.device_ref_elements_data['scores']['diamonds_importance']
         time_importance = self.device_ref_elements_data['scores']['time_importance']
         y1, y2, x1, x2 = self.device_ref_elements_data['scores']['coords_diamonds_gathered']
-        cropped_dig = state_frame[y1:y2, x1:x2]
+        cropped_dig = frame[y1:y2, x1:x2]
         diamonds_gathered = self.digits_matcher.match(cropped_dig,
                                                       threshold=match_threshold)
 
@@ -88,12 +89,19 @@ class Environment:
                 if frame is not None:
                     break
 
+            #cv2.imwrite(f'/tmp/frames/frame_{j}.png', np.copy(frame))
+
             reward += self.get_reward(np.copy(frame))
-            next_state[i] = np.copy(frame)
+            next_state[i] = self.get_state_from_frame(np.copy(frame))
 
         done = self.is_done(np.copy(frame))
 
-        return next_state, reward, done, np.copy(frame)
+        return next_state, reward, done
+
+    def get_state_from_frame(self, frame):
+        y1, y2, x1, x2 = self.visible_state_area_data
+        return frame[y1: y2, x1: x2]
+
 
     def is_done(self, frame):
         '''
@@ -113,18 +121,26 @@ class Environment:
             Currently working with fixed coords, not elegant though, futurely
             using object detection ...
         """
-        restart_coords = self.device_ref_elements_data['done_comparison_data']['restart_btn_coords']
+        data = self.device_ref_elements_data['done_comparison_data']
+        restart_coords = data['restart_btn_coords']
         self.episode_start_time = None
         tap(restart_coords[0], restart_coords[1])
-        time.sleep(1)
+
+        coords_restart_ongame = data['restart_ongame']
+        for x, y in coords_restart_ongame:
+            tap(x, y)
+            time.sleep(1)
+
         state = np.zeros(self.state_size)
         while True:
             frame = self.asb.get_last_frame()
             if frame is not None:
                 break
 
+
+        time.sleep(1)
         for i in range(self.action_repeat):
-            state[i] = np.copy(frame)
+            state[i] = self.get_state_from_frame(np.copy(frame))
 
         return state
 
@@ -138,7 +154,8 @@ if __name__ == "__main__":
         'coords_done_success': [5, 16, 122, 174],
         'img_done_fail': 'data/s8_cut_try_again.png',
         'img_done_success': '/home/neo/dev/balloma_rl_agent/data/game_score_s8.png',
-        'restart_btn_coords': [640, 1110]
+        'restart_btn_coords': [640, 1110],
+        'restart_ongame': [(2764, 93), (2624, 552)],
     }
 
     scores = {
@@ -171,7 +188,11 @@ if __name__ == "__main__":
     noise = OUNoise(action.shape[0], exploration_mu,
                                  exploration_theta, exploration_sigma)
 
+
+
+    time_limit = 10
     for i in range(10):
+        start_time = time.time()
         env.reset()
         done = False
         j = 0
@@ -184,8 +205,12 @@ if __name__ == "__main__":
             #print(ns)
             v_size, angle, speed = np.array(transform_action(action, action_range, action_low),
                           dtype='uint8')
-            ns, rw, done, frame = env.step(v_size, angle, speed)
-            #cv2.imwrite(f'/tmp/frames/frame_{j}.png', frame)
+            ns, rw, done = env.step((v_size, angle, speed))
+            if time.time() - start_time > time_limit:
+                print("Time limit, will reset")
+                done = True
+                #env.reset()
+
             #cv2.imshow('frame', frame[28: 112, :])
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()
