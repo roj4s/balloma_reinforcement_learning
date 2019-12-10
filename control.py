@@ -35,7 +35,7 @@ def match_imgs(frame, el_coord, el_img, threshold=4):
     _, el = cv2.threshold(el, 200, 255, cv2.THRESH_BINARY)
     #cv2.imshow('el', el)
     dif = np.array(cut - el).flatten()
-    return sum(dif) > threshold
+    return sum(dif) < threshold
 
 def transform_action(action, action_range, action_low):
     return action * action_range + action_low
