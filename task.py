@@ -116,6 +116,7 @@ if __name__ == "__main__":
         'coords_diamonds_gathered': [11, 27, 25, 35],
         'digits_mask_addr': '/home/neo/dev/balloma_rl_agent/misc/digits',
         'match_threshold': 10,
+        'state_area': [28, 112],
         'time_importance': 0.7,
         'diamonds_importance': 0.3,
         'episode_time_limit': 60,
@@ -153,13 +154,13 @@ if __name__ == "__main__":
             v_size, angle, speed = np.array(transform_action(action, action_range, action_low),
                           dtype='uint8')
             ns, rw, done, frame = env.step(v_size, angle, speed)
-            cv2.imshow('frame', frame)
+            #cv2.imwrite(f'/tmp/frames/frame_{j}.png', frame)
+            cv2.imshow('frame', frame[28: 112, :])
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()
                 #asb.stop()
                 exit(0)
                 break
-            #cv2.imwrite(f'/tmp/frames/frame_dig_{j}.png', frame[11:27, 25:35])
 
         env.reset()
 
