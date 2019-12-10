@@ -5,6 +5,7 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 import math
+from ounoise import OUNoise
 
 
 class Critic:
@@ -26,7 +27,7 @@ class Critic:
     def build_model(self):
         """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
         # Define input layers
-        states = layers.Input(shape=(self.state_size,), name='states')
+        states = layers.Input(shape=self.state_size, name='states')
         actions = layers.Input(shape=(self.action_size,), name='actions')
 
         # Add hidden layer(s) for state pathway
@@ -206,7 +207,7 @@ class DDPG():
 
     def act(self, state):
         """Returns actions for given state(s) as per current policy."""
-        state = np.reshape(state, [-1, self.state_size])
+        #state = np.reshape(state, [-1, self.state_size])
         action = self.actor_local.model.predict(state)[0]
         return list(action + self.noise.sample()) # add some noise for exploration
 
