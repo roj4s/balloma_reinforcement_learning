@@ -75,6 +75,8 @@ class Actor:
         """
         self.state_size = state_size
         self.action_size = action_size
+        print("Actor action size")
+        print(self.action_size)
         self.action_low = action_low
         self.action_high = action_high
         self.action_range = self.action_high - self.action_low
@@ -88,7 +90,8 @@ class Actor:
         states = layers.Input(shape=self.state_size, name='states')
 
         # Add hidden layers
-        net = layers.Dense(units=32, activation='relu')(states)
+        net = layers.Flatten()(states)
+        net = layers.Dense(units=32, activation='relu')(net)
         net = layers.Dense(units=64, activation='relu')(net)
         net = layers.Dense(units=32, activation='relu')(net)
         # Try different layer sizes, activations, add batch normalization, regularizers, etc.
@@ -111,7 +114,8 @@ class Actor:
         updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         self.train_fn = K.function(inputs=[self.model.input, action_gradients,
                                            K.learning_phase()],
-                                   outputs=[self.model.output], updates=updates_op)
+                                   outputs=[self.model.output],
+                                   updates=updates_op)
 
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
@@ -145,9 +149,9 @@ class DDPG():
     """Reinforcement Learning agent that learns using DDPG."""
     def __init__(self, task):
         self.task = task
-        self.session = K.get_session()
-        init = tf.global_variables_initializer()
-        self.session.run(init)
+        #self.session = K.get_session()
+        #init = tf.global_variables_initializer()
+        #self.session.run(init)
         self.state_size = task.state_size
         self.action_size = task.action_size
         self.action_low = task.action_low
@@ -208,7 +212,7 @@ class DDPG():
     def act(self, state):
         """Returns actions for given state(s) as per current policy."""
         #state = np.reshape(state, [-1, self.state_size])
-        action = self.actor_local.model.predict(state)[0]
+        action = self.actor_local.model.predict(np.array([state]))[0]
         return list(action + self.noise.sample()) # add some noise for exploration
 
     def learn(self, experiences):
