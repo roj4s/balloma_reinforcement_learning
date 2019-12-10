@@ -21,7 +21,7 @@ def put(size, angle, duration, device_width=1440, device_height=2960):
 def tap(x, y):
     sp.call(['adb', 'shell', 'input', 'tap', str(x), str(y)])
 
-def on_game(frame, el_coord, el_img, threshold=4):
+def match_imgs(frame, el_coord, el_img, threshold=4):
     '''
         Currently checking by comparing images.
         It will be replaced by a less device-dependent approach.
@@ -39,4 +39,3 @@ def on_game(frame, el_coord, el_img, threshold=4):
 
 def transform_action(action, action_range, action_low):
     return action * action_range + action_low
-

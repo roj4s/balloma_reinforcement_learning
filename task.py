@@ -1,5 +1,5 @@
 import numpy as np
-from control import put, on_game, tap, transform_action
+from control import put, match_imgs, tap, transform_action
 import time
 from threading import Event
 from queue import Queue
@@ -90,7 +90,7 @@ class Environment:
         try_again_el_data = self.device_ref_elements_data['try_again']
         coords = try_again_el_data['coords']
         img_path = try_again_el_data['img_path']
-        return not on_game(frame, coords, img_path)
+        return not match_imgs(frame, coords, img_path)
 
     def reset(self):
         """
