@@ -17,11 +17,16 @@ class Environment:
                                        scale_ratio=0.1, bitrate=120000)
         self.device_height, self.device_width = self.asb.get_device_screen_shape()
         self.action_repeat = 3
-        self.state_frame_width = width
-        self.state_frame_height = height
-        self.device_evt = Event()
-        self.state_size = self.action_repeat * self.state_frame_width * self.state_frame_height * 3
+        self.action_low = np.array([1, 0, 1])
+        self.action_high = np.array([10, 359, 2000])
+        self.action_range = action_high - action_low
         self.device_ref_elements_data = device_ref_elements_data
+        self.visible_state_area_data = self.device_ref_elements_data['scores']['state_area']
+        self.state_frame_width = self.visible_state_area_data[3] - self.visible_state_area_data[2]
+        self.state_frame_height = self.visible_state_area_data[1] - self.visible_state_area_data[0]
+        self.device_evt = Event()
+        self.state_size = (self.action_repeat, self.state_frame_height,
+                           self.state_frame_width, 3)
         self.digits_matcher = DigitsMatcher(self.device_ref_elements_data['scores']['digits_mask_addr'])
         self.asb.run()
         self.episode_start_time = None
@@ -32,8 +37,14 @@ class Environment:
             involved view components, converts it to
             float representation and computes reward.
         """
-        # TODO:
         t = time.time() - self.episode_start_time
+        done_comparison_data = self.device_ref_elements_data['done_comparison_data']
+        coords_done_success = done_comparison_data['coords_done_success']
+        img_done_success = done_comparison_data['img_done_success']
+        done_succ = match_imgs(frame, coords_done_success, img_done_success)
+        if done_succ:
+            return 1
+
         match_threshold = self.device_ref_elements_data['scores']['match_threshold']
         episode_time_limit = self.device_ref_elements_data['scores']['episode_time_limit']
         diamonds_total = self.device_ref_elements_data['scores']['diamonds_total']
@@ -41,18 +52,16 @@ class Environment:
         time_importance = self.device_ref_elements_data['scores']['time_importance']
         y1, y2, x1, x2 = self.device_ref_elements_data['scores']['coords_diamonds_gathered']
         cropped_dig = state_frame[y1:y2, x1:x2]
-        cv2.imwrite(f'/tmp/frames/dig_{time.time()}.png', np.copy(cropped_dig))
         diamonds_gathered = self.digits_matcher.match(cropped_dig,
                                                       threshold=match_threshold)
-        print(f"Diamonds Gathered: {diamonds_gathered}")
+
         if diamonds_gathered is None:
-            #TODO: Enhance this
             return 0
 
         return diamonds_importance * (diamonds_gathered/diamonds_total) - time_importance * t/episode_time_limit
 
 
-    def step(self, vector_size, angle, speed):
+    def step(self, action):
         """
             Uses action to obtain next state, reward, done.
             Through adb shell input applies a touchscreen swipe
@@ -65,21 +74,25 @@ class Environment:
             self.episode_start_time = time.time()
 
         reward = 0
-        states = []
+        next_state = np.zeros(self.state_size)
+        vector_size, angle, speed = np.array(transform_action(action,
+                                                              self.action_range,
+                                                              self.action_low),
+                          dtype='uint8')
 
-        for _ in range(self.action_repeat):
+        for i in range(self.action_repeat):
             put(vector_size, angle, speed, self.device_width, self.device_height)
-            t = time.time()
+
             while True:
                 frame  = self.asb.get_last_frame()
                 if frame is not None:
                     break
 
             reward += self.get_reward(np.copy(frame))
-            states.append(reward)
-            done = self.is_done(np.copy(frame))
+            next_state[i] = np.copy(frame)
 
-        next_state = []
+        done = self.is_done(np.copy(frame))
+
         return next_state, reward, done, np.copy(frame)
 
     def is_done(self, frame):
@@ -87,10 +100,12 @@ class Environment:
             Currently checking by comparing images.
             It will be replaced by a less device-dependent approach.
         '''
-        try_again_el_data = self.device_ref_elements_data['try_again']
-        coords = try_again_el_data['coords']
-        img_path = try_again_el_data['img_path']
-        return not match_imgs(frame, coords, img_path)
+        done_comparison_data = self.device_ref_elements_data['done_comparison_data']
+        coords_done_fail = done_comparison_data['coords_done_fail']
+        coords_done_success = done_comparison_data['coords_done_success']
+        img_done_fail = done_comparison_data['img_done_fail']
+        img_done_success = done_comparison_data['img_done_success']
+        return match_imgs(frame, coords_done_fail, img_done_fail) or match_imgs(frame, coords_done_success, img_done_success)
 
     def reset(self):
         """
@@ -98,17 +113,31 @@ class Environment:
             Currently working with fixed coords, not elegant though, futurely
             using object detection ...
         """
-        restart_coords = self.device_ref_elements_data['try_again']['restart_btn_coords']
+        restart_coords = self.device_ref_elements_data['done_comparison_data']['restart_btn_coords']
         self.episode_start_time = None
         tap(restart_coords[0], restart_coords[1])
+        time.sleep(1)
+        state = np.zeros(self.state_size)
+        while True:
+            frame = self.asb.get_last_frame()
+            if frame is not None:
+                break
+
+        for i in range(self.action_repeat):
+            state[i] = np.copy(frame)
+
+        return state
+
 
 if __name__ == "__main__":
-    # Coords based on a 296x144 screen
+    # Coords based on a 296x144 frames
 
     import random
-    try_again_el_data = {
-        'coords': [45, 60, 118, 180],
-        'img_path': 'data/s8_cut_try_again.png',
+    done_comparison_data = {
+        'coords_done_fail': [45, 60, 118, 180],
+        'coords_done_success': [5, 16, 122, 174],
+        'img_done_fail': 'data/s8_cut_try_again.png',
+        'img_done_success': '/home/neo/dev/balloma_rl_agent/data/game_score_s8.png',
         'restart_btn_coords': [640, 1110]
     }
 
@@ -116,7 +145,7 @@ if __name__ == "__main__":
         'coords_diamonds_gathered': [11, 27, 25, 35],
         'digits_mask_addr': '/home/neo/dev/balloma_rl_agent/misc/digits',
         'match_threshold': 10,
-        'state_area': [28, 112],
+        'state_area': [28, 112, 0, 296],
         'time_importance': 0.7,
         'diamonds_importance': 0.3,
         'episode_time_limit': 60,
@@ -124,7 +153,8 @@ if __name__ == "__main__":
 
     }
 
-    env = Environment(device_ref_elements_data={'try_again': try_again_el_data,
+    env = Environment(device_ref_elements_data={'done_comparison_data':
+                                                done_comparison_data,
                                                 'scores': scores})
 
     # Actions generation
@@ -142,6 +172,7 @@ if __name__ == "__main__":
                                  exploration_theta, exploration_sigma)
 
     for i in range(10):
+        env.reset()
         done = False
         j = 0
         while not done:
@@ -155,14 +186,13 @@ if __name__ == "__main__":
                           dtype='uint8')
             ns, rw, done, frame = env.step(v_size, angle, speed)
             #cv2.imwrite(f'/tmp/frames/frame_{j}.png', frame)
-            cv2.imshow('frame', frame[28: 112, :])
+            #cv2.imshow('frame', frame[28: 112, :])
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()
                 #asb.stop()
                 exit(0)
                 break
 
-        env.reset()
 
     cv2.destroyAllWindows()
 

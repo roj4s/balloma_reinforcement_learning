@@ -84,7 +84,7 @@ class Actor:
     def build_model(self):
         """Build an actor (policy) network that maps states -> actions."""
         # Define input layer (states)
-        states = layers.Input(shape=(self.state_size,), name='states')
+        states = layers.Input(shape=self.state_size, name='states')
 
         # Add hidden layers
         net = layers.Dense(units=32, activation='relu')(states)
