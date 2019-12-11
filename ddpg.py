@@ -1,6 +1,7 @@
 from keras import layers, models, optimizers
 from keras.regularizers import l2
 from keras.initializers import RandomUniform
+from keras.callbacks import ModelCheckpoint, Callback
 from keras import backend as K
 import tensorflow as tf
 import numpy as np
@@ -220,7 +221,7 @@ class DDPG():
                             self.exploration_sigma)
         # Replay memory
         self.buffer_size = 100000
-        self.batch_size = 16
+        self.batch_size = 3
         self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
 
         # Algorithm parameters
@@ -279,7 +280,13 @@ class DDPG():
 
         # Train actor model (local)
         action_gradients = np.reshape(self.critic_local.get_action_gradients([states, actions, 0]), (-1, self.action_size))
-        self.actor_local.train_fn([states, action_gradients, 1])
+        r = self.actor_local.train_fn([states, action_gradients, 1])
+        print("Actor train function")
+        print(r)
+
+        loss = np.mean(-action_gradients * actions)
+        print("Loss:")
+        print(loss)
 
         # custom training function Soft-update target models
         self.soft_update(self.critic_local.model, self.critic_target.model)
