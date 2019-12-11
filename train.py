@@ -5,19 +5,21 @@ def train(agent, env, num_episodes=1000, episode_seconds_constrain=None):
     for i_episode in range(1, num_episodes+1):
         state = agent.reset_episode() # start a new episode
         episode_start_time = time.time()
+        step_i = 0
         while True:
             action = agent.act(state)
-            print("Action is:")
-            print(np.shape(action))
-
             next_state, reward, done = env.step(action)
+            print(f"Episode: {i_episode}, Step: {step_i}, Reward: {reward}, Done: {done}")
             t = time.time() - episode_start_time
             if episode_seconds_constrain is not None and t > episode_seconds_constrain:
                 done = True
             agent.step(action, reward, next_state, done)
             state = next_state
+            step_i += 1
             if done:
-                print("\rEpisode = {:4d}, score = {:7.3f} (best = {:7.3f})".format(i_episode, agent.score,
+                agent_memory_len = len(agent.memory)
+                print("\rEpisode = {:4d}, Experiences: {},  score = {:7.3f}|"\
+                      "(best = {:7.3f})".format(i_episode, agent_memory_len, agent.score,
                                                agent.best_score,
                                                ), end="")
                 break

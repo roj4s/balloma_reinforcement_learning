@@ -31,7 +31,8 @@ class Critic:
         actions = layers.Input(shape=(self.action_size,), name='actions')
 
         # Add hidden layer(s) for state pathway
-        net_states = layers.Dense(units=32, activation='relu')(states)
+        net_states = layers.Flatten()(states)
+        net_states = layers.Dense(units=32, activation='relu')(net_states)
         net_states = layers.Dense(units=64, activation='relu')(net_states)
 
         # Add hidden layer(s) for action pathway
@@ -75,8 +76,6 @@ class Actor:
         """
         self.state_size = state_size
         self.action_size = action_size
-        print("Actor action size")
-        print(self.action_size)
         self.action_low = action_low
         self.action_high = action_high
         self.action_range = self.action_high - self.action_low
@@ -134,6 +133,7 @@ class ReplayBuffer:
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
         e = self.experience(state, action, reward, next_state, done)
+        print(f"Memory next state shape: {next_state.shape}")
         self.memory.append(e)
 
     def sample(self):
@@ -149,9 +149,9 @@ class DDPG():
     """Reinforcement Learning agent that learns using DDPG."""
     def __init__(self, task):
         self.task = task
-        #self.session = K.get_session()
-        #init = tf.global_variables_initializer()
-        #self.session.run(init)
+        self.session = K.get_session()
+        init = tf.global_variables_initializer()
+        self.session.run(init)
         self.state_size = task.state_size
         self.action_size = task.action_size
         self.action_low = task.action_low
@@ -182,7 +182,7 @@ class DDPG():
                             self.exploration_sigma)
         # Replay memory
         self.buffer_size = 100000
-        self.batch_size = 64
+        self.batch_size = 3
         self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
 
         # Algorithm parameters
@@ -202,6 +202,8 @@ class DDPG():
         self.total_reward += reward
 
         # Learn, if enough samples are available in memory
+        print("Memory Size: {}, Batch Size: {}".format(len(self.memory),
+                                                       self.batch_size))
         if len(self.memory) > self.batch_size:
             experiences = self.memory.sample()
             self.learn(experiences)
@@ -218,11 +220,12 @@ class DDPG():
     def learn(self, experiences):
         """Update policy and value parameters using given batch of experience tuples."""
         # Convert experience tuples to separate arrays for each element (states, actions, rewards, etc.)
-        states = np.vstack([e.state for e in experiences if e is not None])
+        states = np.vstack([[e.state] for e in experiences if e is not None])
         actions = np.array([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1, self.action_size)
         rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1, 1)
         dones = np.array([e.done for e in experiences if e is not None]).astype(np.uint8).reshape(-1, 1)
-        next_states = np.vstack([e.next_state for e in experiences if e is not None])
+        next_states = np.vstack([[e.next_state] for e in experiences if e is not None])
+        print("Next states shape: {}".format(next_states.shape))
         self.score = rewards.mean()
         self.best_score = max(self.score, self.best_score)
 
