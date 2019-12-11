@@ -1,4 +1,6 @@
 from keras import layers, models, optimizers
+from keras.regularizers import l2
+from keras.initializers import RandomUniform
 from keras import backend as K
 import tensorflow as tf
 import numpy as np
@@ -32,12 +34,22 @@ class Critic:
 
         # Add hidden layer(s) for state pathway
         net_states = layers.Flatten()(states)
-        net_states = layers.Dense(units=32, activation='relu')(net_states)
-        net_states = layers.Dense(units=64, activation='relu')(net_states)
+        net_states = layers.Dense(units=32, activation='relu',
+                                  kernel_regularizer=l2(0.01),
+                                  bias_regularizer=l2(0.01))(net_states)
+
+        net_states = layers.Dense(units=64, activation='relu',
+                                  kernel_regularizer=l2(0.01),
+                                  bias_regularizer=l2(0.01))(net_states)
 
         # Add hidden layer(s) for action pathway
-        net_actions = layers.Dense(units=32, activation='relu')(actions)
-        net_actions = layers.Dense(units=64, activation='relu')(net_actions)
+        net_actions = layers.Dense(units=32, activation='relu',
+                                  kernel_regularizer=l2(0.01),
+                                  bias_regularizer=l2(0.01))(actions)
+
+        net_actions = layers.Dense(units=64, activation='relu',
+                                  kernel_regularizer=l2(0.01),
+                                  bias_regularizer=l2(0.01))(net_actions)
 
         # Try different layer sizes, activations, add batch normalization, regularizers, etc.
 
@@ -47,12 +59,17 @@ class Critic:
 
         # Add more layers to the combined network if needed
         # Add final output layer to produce action values (Q values)
-        Q_values = layers.Dense(units=1, name='q_values')(net)
+        Q_values = layers.Dense(units=1, name='q_values',
+                                kernel_initializer=RandomUniform(minval=-0.0003,
+                                                                 maxval=0.0003),
+                                bias_initializer=RandomUniform(minval=-0.0003,
+                                                                 maxval=0.0003)
+                                )(net)
                                                                                                                                                                                                                      # Create Keras model
         self.model = models.Model(inputs=[states, actions], outputs=Q_values)
 
         # Define optimizer and compile model for training with built-in loss function
-        optimizer = optimizers.Adam()
+        optimizer = optimizers.Adam(learning_rate=0.001)
         self.model.compile(optimizer=optimizer, loss='mse')
 
         # Compute action gradients (derivative of Q values w.r.t. to actions)
@@ -89,14 +106,35 @@ class Actor:
         states = layers.Input(shape=self.state_size, name='states')
 
         # Add hidden layers
-        net = layers.Flatten()(states)
-        net = layers.Dense(units=32, activation='relu')(net)
-        net = layers.Dense(units=64, activation='relu')(net)
-        net = layers.Dense(units=32, activation='relu')(net)
+        net = layers.Conv2D(filters=32, kernel_size=2,
+                            kernel_regularizer=l2(0.01),
+                            bias_regularizer=l2(0.01),
+                            activation='relu')(states)
+
+        net = layers.Conv2D(filters=32, kernel_size=2,
+                            kernel_regularizer=l2(0.01),
+                            bias_regularizer=l2(0.01),
+                            activation='relu')(states)
+
+        net = layers.Conv2D(filters=32, kernel_size=2,
+                            kernel_regularizer=l2(0.01),
+                            bias_regularizer=l2(0.01),
+                            activation='relu')(states)
+
+
+        net = layers.Dense(units=200, activation='relu')(net)
+        net = layers.Dense(units=200, activation='relu')(net)
         # Try different layer sizes, activations, add batch normalization, regularizers, etc.
 
         # Add final output layer with sigmoid activation
-        raw_actions = layers.Dense(units=self.action_size, activation='sigmoid', name='raw_actions')(net)
+        raw_actions = layers.Dense(units=self.action_size, activation='tanh',
+                                   name='raw_actions',
+                                   kernel_initializer=RandomUniform(minval=-0.0003,
+                                                                 maxval=0.0003),
+                                bias_initializer=RandomUniform(minval=-0.0003,
+                                                                 maxval=0.0003))(net)
+
+        raw_actions = layers.GlobalAveragePooling2D()(raw_actions)
         # Scale [0, 1] output for each action dimension to proper range
         actions = layers.Lambda(lambda x: (x * self.action_range) + self.action_low, name='actions')(raw_actions)
 
@@ -109,7 +147,7 @@ class Actor:
 
         # Incorporate any additional losses here (e.g. from regularizers)
         # Define optimizer and training function
-        optimizer = optimizers.Adam()
+        optimizer = optimizers.Adam(learning_rate=0.001)
         updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         self.train_fn = K.function(inputs=[self.model.input, action_gradients,
                                            K.learning_phase()],
@@ -182,12 +220,12 @@ class DDPG():
                             self.exploration_sigma)
         # Replay memory
         self.buffer_size = 100000
-        self.batch_size = 3
+        self.batch_size = 16
         self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
 
         # Algorithm parameters
         self.gamma = 0.99 # discount factor
-        self.tau = 0.01 # for soft update of target parameters
+        self.tau = 0.001 # for soft update of target parameters
 
     def reset_episode(self):
         self.noise.reset()
@@ -218,13 +256,14 @@ class DDPG():
         return list(action + self.noise.sample()) # add some noise for exploration
 
     def learn(self, experiences):
+        print("Fitting model iteration ...")
         """Update policy and value parameters using given batch of experience tuples."""
         # Convert experience tuples to separate arrays for each element (states, actions, rewards, etc.)
-        states = np.vstack([[e.state] for e in experiences if e is not None])
+        states = np.array([e.state for e in experiences if e is not None])
         actions = np.array([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1, self.action_size)
         rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1, 1)
         dones = np.array([e.done for e in experiences if e is not None]).astype(np.uint8).reshape(-1, 1)
-        next_states = np.vstack([[e.next_state] for e in experiences if e is not None])
+        next_states = np.array([e.next_state for e in experiences if e is not None])
         print("Next states shape: {}".format(next_states.shape))
         self.score = rewards.mean()
         self.best_score = max(self.score, self.best_score)
@@ -253,3 +292,11 @@ class DDPG():
         assert len(local_weights) == len(target_weights), "Local and target model parameters must have the same size"
         new_weights = self.tau * local_weights + (1 - self.tau) * target_weights
         target_model.set_weights(new_weights)
+
+
+    if __name__ == "__main__":
+        state_size = (84, 296, 9)
+        action_low = np.array([1, 0 ,1])
+        action_high = np.array([10, 359, 2000])
+        net = Actor(state_size, 3, action_low, action_high)
+        net.model.summary()

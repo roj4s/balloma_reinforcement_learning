@@ -26,8 +26,8 @@ class Environment:
         self.state_frame_width = self.visible_state_area_data[3] - self.visible_state_area_data[2]
         self.state_frame_height = self.visible_state_area_data[1] - self.visible_state_area_data[0]
         self.device_evt = Event()
-        self.state_size = (self.action_repeat, self.state_frame_height,
-                           self.state_frame_width, 3)
+        self.state_size = (self.state_frame_height,
+                           self.state_frame_width, 3 * self.action_repeat)
         self.digits_matcher = DigitsMatcher(self.device_ref_elements_data['scores']['digits_mask_addr'])
         self.asb.run()
         self.episode_start_time = None
@@ -81,7 +81,7 @@ class Environment:
                                                               self.action_low),
                           dtype='uint8')
 
-        for i in range(self.action_repeat):
+        for i in range(0, self.action_repeat * 3, 3):
             put(vector_size, angle, speed, self.device_width, self.device_height)
 
             while True:
@@ -92,7 +92,7 @@ class Environment:
             #cv2.imwrite(f'/tmp/frames/frame_{j}.png', np.copy(frame))
 
             reward += self.get_reward(np.copy(frame))
-            next_state[i] = self.get_state_from_frame(np.copy(frame))
+            next_state[:, :, i:i+3] = self.get_state_from_frame(np.copy(frame))
 
         done = self.is_done(np.copy(frame))
 
@@ -139,8 +139,9 @@ class Environment:
 
 
         time.sleep(1)
-        for i in range(self.action_repeat):
-            state[i] = self.get_state_from_frame(np.copy(frame))
+
+        for i in range(0, self.action_repeat * 3, 3):
+            state[:, :, i:i+3] = self.get_state_from_frame(np.copy(frame))
 
         return state
 
