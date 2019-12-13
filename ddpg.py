@@ -52,7 +52,6 @@ class Critic:
                                   kernel_regularizer=l2(0.01),
                                   bias_regularizer=l2(0.01))(net_actions)
 
-        # Try different layer sizes, activations, add batch normalization, regularizers, etc.
 
         # Combine state and action pathways
         net = layers.Add()([net_states, net_actions])
@@ -197,6 +196,7 @@ class DDPG():
         self.action_high = task.action_high
         self.score = -math.inf
         self.best_score = -math.inf
+        self.last_loss = math.inf
 
         # Actor (Policy) Model
         self.actor_local = Actor(self.state_size, self.action_size, self.action_low, self.action_high)
@@ -221,7 +221,7 @@ class DDPG():
                             self.exploration_sigma)
         # Replay memory
         self.buffer_size = 100000
-        self.batch_size = 3
+        self.batch_size = 16
         self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
 
         # Algorithm parameters
@@ -281,12 +281,8 @@ class DDPG():
         # Train actor model (local)
         action_gradients = np.reshape(self.critic_local.get_action_gradients([states, actions, 0]), (-1, self.action_size))
         r = self.actor_local.train_fn([states, action_gradients, 1])
-        print("Actor train function")
-        print(r)
 
-        loss = np.mean(-action_gradients * actions)
-        print("Loss:")
-        print(loss)
+        self.last_loss = np.mean(-action_gradients * actions)
 
         # custom training function Soft-update target models
         self.soft_update(self.critic_local.model, self.critic_target.model)

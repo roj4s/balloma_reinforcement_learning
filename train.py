@@ -1,20 +1,46 @@
 import time
 import numpy as np
+import os
 
-def train(agent, env, num_episodes=1000, episode_seconds_constrain=None):
+def train(agent, env, num_episodes=10000000000000000000,
+          episode_seconds_constrain=None, output_path=None):
+
+    timestmp = time.time()
+
+    if output_path is None:
+        output_path = '/tmp'
+
+    output_path = os.path.join(output_path, f"udacity_capstone_log_{timestmp}")
+
+    columns = ('episode', 'step', 'reward', 'loss', 'done', 'timestamp')
+    col_frm = ",".join("{}" for _ in columns)
+    col_frm += '\n'
+
+    with open(output_path, 'wt') as f:
+        f.write(col_frm.format(*columns))
+
     for i_episode in range(1, num_episodes+1):
         state = agent.reset_episode() # start a new episode
         episode_start_time = time.time()
         step_i = 0
-        while True:
+        run = True
+        while run:
+            step_timestamp = time.time()
             action = agent.act(state)
             next_state, reward, done = env.step(action)
             print(f"Episode: {i_episode}, Step: {step_i}, Reward: {reward}, Done: {done}")
-            t = time.time() - episode_start_time
+            t = step_timestamp - episode_start_time
+
             if episode_seconds_constrain is not None and t > episode_seconds_constrain:
-                done = True
+                run = False
+
             agent.step(action, reward, next_state, done)
             state = next_state
+
+            with open(output_path, 'at') as f:
+                f.write(col_frm.format(i_episode, step_i, reward,
+                                       agent.last_loss, done, step_timestamp))
+
             step_i += 1
             if done:
                 agent_memory_len = len(agent.memory)
