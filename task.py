@@ -44,7 +44,14 @@ class Environment:
         img_done_success = done_comparison_data['img_done_success']
         done_succ = match_imgs(frame, coords_done_success, img_done_success)
         if done_succ:
-            return 1
+            return 2
+
+        img_done_fail = done_comparison_data['img_done_fail']
+        coords_done_fail = done_comparison_data['coords_done_fail']
+        done_fail = match_imgs(frame, coords_done_fail, img_done_fail)
+        if done_fail:
+            return -2
+
 
         match_threshold = self.device_ref_elements_data['scores']['match_threshold']
         episode_time_limit = self.device_ref_elements_data['scores']['episode_time_limit']
@@ -84,6 +91,7 @@ class Environment:
         for i in range(0, self.action_repeat * 3, 3):
             put(vector_size, angle, speed, self.device_width, self.device_height)
 
+            time.sleep(0.5)
             while True:
                 frame  = self.asb.get_last_frame()
                 if frame is not None:
