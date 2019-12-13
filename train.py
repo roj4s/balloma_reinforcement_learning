@@ -12,7 +12,8 @@ def train(agent, env, num_episodes=10000000000000000000,
 
     output_path = os.path.join(output_path, f"udacity_capstone_log_{timestmp}")
 
-    columns = ('episode', 'step', 'reward', 'loss', 'done', 'timestamp')
+    columns = ('episode', 'step', 'reward', 'loss', 'done', 'timestamp',
+               'vector_size', 'angle', 'speed')
     col_frm = ",".join("{}" for _ in columns)
     col_frm += '\n'
 
@@ -39,7 +40,8 @@ def train(agent, env, num_episodes=10000000000000000000,
 
             with open(output_path, 'at') as f:
                 f.write(col_frm.format(i_episode, step_i, reward,
-                                       agent.last_loss, done, step_timestamp))
+                                       agent.last_loss, done, step_timestamp,
+                                       *action))
 
             step_i += 1
             if done:
@@ -79,5 +81,5 @@ if __name__ == "__main__":
                                                 done_comparison_data,
                                                 'scores': scores})
     agent = DDPG(env)
-    train(agent, env, episode_seconds_constrain=30)
+    train(agent, env, episode_seconds_constrain=45)
 
