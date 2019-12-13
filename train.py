@@ -8,9 +8,14 @@ def train(agent, env, num_episodes=10000000000000000000,
     timestmp = time.time()
 
     if output_path is None:
-        output_path = '/tmp'
+        output_path = '/home/neo/dev/balloma_rl_agent/outputs'
 
-    output_path = os.path.join(output_path, f"udacity_capstone_log_{timestmp}")
+    weights_output_critic = os.path.join(output_path,
+                                  f"critic_weights_{timestmp}")
+    weights_output_actor = os.path.join(output_path,
+                                  f"actor_weights_{timestmp}")
+
+    output_path = os.path.join(output_path, f"log_{timestmp}")
 
     columns = ('episode', 'step', 'reward', 'loss', 'done', 'timestamp',
                'vector_size', 'angle', 'speed')
@@ -44,6 +49,9 @@ def train(agent, env, num_episodes=10000000000000000000,
                                        *action))
 
             step_i += 1
+            agent.actor_local.model.save_weights(weights_output_actor)
+            agent.critic_local.model.save_weights(weights_output_critic)
+
             if done:
                 agent_memory_len = len(agent.memory)
                 print("\rEpisode = {:4d}, Experiences: {},  score = {:7.3f}|"\
