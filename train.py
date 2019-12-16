@@ -61,21 +61,21 @@ def train(agent, env, num_episodes=10000000000000000000,
                 break
 
 if __name__ == "__main__":
-    from ddpg import DDPG
-    from task import Environment
+    from agent import DDPG
+    from environment import Environment
 
     done_comparison_data = {
         'coords_done_fail': [45, 60, 118, 180],
         'coords_done_success': [5, 16, 122, 174],
         'img_done_fail': 'data/s8_cut_try_again.png',
-        'img_done_success': '/home/neo/dev/balloma_rl_agent/data/game_score_s8.png',
+        'img_done_success': 'data/game_score_s8.png',
         'restart_btn_coords': [640, 1110],
         'restart_ongame': [(2764, 93), (2624, 552)],
     }
 
     scores = {
         'coords_diamonds_gathered': [11, 27, 25, 35],
-        'digits_mask_addr': '/home/neo/dev/balloma_rl_agent/misc/digits',
+        'digits_mask_addr': 'data/digits',
         'match_threshold': 10,
         'state_area': [28, 112, 0, 296],
         'time_importance': 0.7,
