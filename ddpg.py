@@ -105,6 +105,8 @@ class Actor:
         # Define input layer (states)
         states = layers.Input(shape=self.state_size, name='states')
 
+        net = layers.Lambda(lambda x: x/255)(states)
+
         # Add hidden layers
         net = layers.Conv2D(filters=32, kernel_size=2,
                             kernel_regularizer=l2(0.01),
@@ -114,12 +116,12 @@ class Actor:
         net = layers.Conv2D(filters=32, kernel_size=2,
                             kernel_regularizer=l2(0.01),
                             bias_regularizer=l2(0.01),
-                            activation='relu')(states)
+                            activation='relu')(net)
 
         net = layers.Conv2D(filters=32, kernel_size=2,
                             kernel_regularizer=l2(0.01),
                             bias_regularizer=l2(0.01),
-                            activation='relu')(states)
+                            activation='relu')(net)
 
 
         net = layers.Dense(units=200, activation='relu')(net)
@@ -302,4 +304,5 @@ class DDPG():
         action_low = np.array([1, 0 ,1])
         action_high = np.array([10, 359, 2000])
         net = Actor(state_size, 3, action_low, action_high)
+        #net = Critic(state_size, 3)
         net.model.summary()
