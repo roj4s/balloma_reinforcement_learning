@@ -6,6 +6,7 @@ import random
 import cv2
 
 def put(size, angle, duration, device_width=1440, device_height=2960):
+    duration = int(duration)
     x0 = int(device_height*0.9)
     y0 = int(device_width*0.5)
     x1 = x0 + int((size * np.sin(90 - angle)))
