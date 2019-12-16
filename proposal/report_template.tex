@@ -7,7 +7,7 @@
 % should be used if it is desired that the figures are to be displayed in
 % draft mode.
 
-\documentclass[peerreview]{IEEEtran}
+\documentclass[peerreview,onecolumn]{IEEEtran}
 \usepackage{cite} % Tidies up citation numbers.
 \usepackage{url} % Provides better formatting of URLs.
 \usepackage[utf8]{inputenc} % Allows Turkish characters.
@@ -17,6 +17,9 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{stackengine}
+
+\usepackage{scrextend}
+\changefontsizes{14pt}
 
 \hyphenation{op-tical net-works semi-conduc-tor} % Corrects some bad hyphenation 
 
@@ -146,27 +149,126 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
    
 	An interface is implemented to provide a RL suitable environment by which the agent can interact with the game to construct the optimized policy. Since the game runs in Android, the environment should provide a controlling interface with an android physical or virtual device. Such functionality can be attained through the Android Debug Bridge (adb\footnote{https://developer.android.com/studio/command-line/adb}). 
 	
+	\subsection{States}	
+	
 	In this proposal the states are represented by raw scene frames of 240x240. It means at each time step $t$ the environment is at state $s_t \in \mathbb{R}^3$ formatted as a tensor of shape $(240, 240, 3)$. A similar approach was presented in \cite{ddpg_2015} and \cite{replay_buffer_2015}, however scenes in those works are 2D spaces and in this case it is 3D. Frames are cropped to exclude score indicators and focus on more important pixels.
 	
-	On each time step the agent can chose to take an action $a_t \in \mathbb{R}^4$. Actions are presented as a tuple $a_t=(x_0, x_1, y_0, y_1, \nu)$ containing swipe attributes: \textit{a)} $x_0$ starting swipe $x$ coordinate, \textit{b)} $x_1$ final swipe $x$ coordinate, \textit{c)} $y_0$ starting swipe $y$ coordinate, \textit{d)} $y_1$ final swipe $y$ coordinate and \textit{e)} swipe velocity $\nu$.
+	\subsection{Actions}
 	
-	Each episode starts with the first swipe inputted by the agent. If the balls falls or get to target position environment is set into a terminal state. Also it will be constrained in time to avoid long episodes. 
+	On each time step the agent can chose to take an action $a_t \in \mathbb{R}^3$. Actions are presented as a tuple $a_t=(\vartheta, \varkappa, \xi)$ that describes the swipe action: \textit{a)} $vartheta$ size of the vector drawn by the swipe, \textit{b)} $\varkappa$ angle with respect to screen horizontal of the vector drawn by the swipe and \textit{c)} $xi$ speed at which swipe is drawn.
+	
+	Each episode starts with the first swipe inputted by the agent. If the balls falls off the terrain world or get to target position, environment is set into a terminal state. Also it will be constrained in time to avoid long episodes. 
 	
 	\section{Reward function}
 	
-	At each time step, after the agent choses an action $a_t$ and such action is applied to environment, a reward $r_t$ is observed. Such reward is computed taking into account two coefficients: \textit{a)} the ratio of gathered floating diamonds over all such elements in the scene($\omega$) and \textit{b)} episode time passed since it started ($\varphi$). Then reward is calculated as:
+	At each time step, after the agent choses an action $a_t$ and such action is applied to environment, a reward $r_t$ is observed. If an episode gets into a failed terminal state (e.g ball falls out) reward of that step is computed as -1. On the other hand if episode ends successfully (i.e the ball hits the target), reward of that step is computed as +2.
+	
+	For others time steps, reward is computed taking into account two coefficients: \textit{a)} ratio between floating diamonds currently gathered over total ($\omega$) and \textit{b)} episode time passed since it started ($\varphi$). Also each parameter is multiplied by a weight coefficient $\alpha$ and $\beta$ that regulates its importance, it permits experimenting different parameter's level of impact. In such cases reward is computed as:
 	
 	\begin{equation}
-	  r(s_t, a_t) = \dfrac{\omega_t}{\varphi_t}
+	  r(s_t, a_t) = \alpha \frac{\omega_t}{\omega_N} - \beta \frac{\varphi_t}{\varphi_N} 
 	\end{equation}
 	
-	  Such coefficients appears as elements of the scene at a fixed frame position. It should be cropped and processed so as to convert such pixels into a suitable representation of its digits. In order to extract the score on each time step from those scene elements, in this work it will be trained a digit recognizer on the well known MNIST handwritten digit database \cite{mnist}.	
+	
+	There exists in the scene an object providing information on how many diamonds has been collected. During training, after an action is inputed into the scene a frame is captured and processed to extract the information needed to compute reward. In order to extract that data, which is used by the reward function, in this work was implemented a picture matching procedure in which crops of predetermined portions of the scene are compared with previously tagged crops of the digits as it is rendered in the scene. 
+
+	For each digit from 0 to 9, crops were previously gathered and tagged. Such digit images are compared with the pixels cropped from scene at specific coordinates it is expected the element with current scoring appears, in order to determine diamonds gathered at each step, during training. 
+	
+	Before comparison, crop's color space is transformed into binary. Then the \textit{height}X\textit{weight} shaped crops are subtracted and bits in the result are summed. If the result is below a predefined threshold, the crop is classified with the digit of the crop it was matched against.
 	  
+	Since it is necessary before hand the exact position of the elements in screen, this approach is dependent on the device's screen size, thus should be manually adjusted for each device it is used on. The code accompanying this report contains coordinates and crops compatible with a Samsung S8+ device screen. This method worked properly in 100\% of cases.
+	
 	  \section{Benchmark Model}
 	  
 	  Previous researches have addressed video game playing agents with reinforcement learning. Mnih et al.  \cite{replay_buffer_2015} created Atari video game playing robots trough the use of an adaptation to Deep Q-Learning. This approach is considered as Deep Reinforcement Learning since makes use of neuronal networks to map states to actions directly. The method was tested on 49 Atari games assessing reward evolution throughout training. It was achieved professional human players comparable performance. 
 	  
 	  Deep Deterministic Policy Gradients \cite{ddpg_2015}, the method presented in this work, was used by its authors to create an agent that plays Torc, a racing video game. They compared effectiveness of the method when applied on low-dimensional features like acceleration, braking and steering and with high-order features like pixel representations (i.e game raw frames), assessing reward evolution throughout training. It was demonstrated by experimentation that similar performance is attained for both features presentations.
+	  
+	  \section{Results}
+	  
+	  It was implemented a Reinforcement Learning setup composed by an agent, represented by a Convolutional Neuronal Network (ConvNet) and an environment, representative of Balloma Video Game, driven by an iterative procedure in which at every step the agent interacts with the environment and information from that interaction is used to adjust the agent's behavior with the goal of incrementing the reward the agent obtains when interacting with the environment. 
+	  
+	 The RL setup follows and Actor-Critic approach in which game actions are inferred by a ConvNet adjusted from experiences obtained by interaction with Balloma Video Game. Each experience is compound of an action, reward and game scene frame, obtained by inputting the inferred action into the video game running in an android device and capturing the rendered frame. Another Neuronal Network, called the Critic, evaluates how well the Actor is performing and outputs a gradient that is used to adjust the Actor towards minimizing the loss and increasing the reward obtained from environment.
+	 
+	 \subsection{Actor ConvNet}
+	 
+	 The Actor Convolutional Neuronal Network architecture is presented in Table \ref{tab:actor_arch}. A similar architecture was proposed in the original paper of Deep Deterministic Policy Gradient \cite{ddpg_2015}. 
+	 
+	 \begin{table}[h] 
+	\centering
+%	\begin{tabular}{p{2cm} p{0.5cm} p{1.3cm}} 
+	\begin{tabular}{l l l} 
+		\toprule 
+%		& & \multicolumn{2}{c}{Metric} \\ 
+%		\cmidrule(l){3-4} 
+		Layer (type) & Output Shape & Param \# \\ 		
+		\midrule
+		$states (InputLayer)$ & (None, 84, 296, 9) & 0\\ 
+		$conv2d\_1 (Conv2D)$ & (None, 83, 295, 32) & 1184  \\ 
+		$conv2d\_2 (Conv2D)$ & (None, 82, 294, 32) & 4128  \\
+		$conv2d\_3 (Conv2D)$ & (None, 81, 293, 32) & 4128  \\
+		$dense\_1 (Dense)$  & (None, 81, 293, 200) & 6600  \\   
+		$dense\_2 (Dense)$ & (None, 81, 293, 200)  & 40200 \\
+		$raw\_actions (Dense)$ & (None, 81, 293, 3) & 603  \\
+		$global\_average\_pooling2d\_1$ & (None, 3) & 0  \\
+		$actions (Lambda)$ & (None, 3) &  0 \\
+		\midrule 
+		\midrule
+		Total params: 56,843 & &  \\
+		Trainable params: 56,843 & &  \\
+		Non-trainable params: 0 & & \\
+
+		\bottomrule 
+	\end{tabular}
+	\smallskip 
+	\caption{Agent's Actor ConvNet Architecture.} 
+	\label{tab:actor_arch} 
+\end{table}
+
+The Actor's ConvNet architecture consists of 3 Conv layers of 32 filters each, without pooling layers. It is followed by two fully connected layers with 200 units. It was used Adam \cite{adam_2014} for learning the network parameters with a learning rate of $10^{-4}$. It is used the rectified non-linearity \cite{relu_2011} for all layers. The final output layer of the actor is a $tanh$ layer, to bound the actions. The final layer weights and biases are initialized from a uniform distribution
+% $[3 × 10^{−4}, 3 × 10^{−4}]$, to ensure the initial outputs for the policy are near zero.
+	 
+	 \subsection{Critic Neuronal Network}
+	 
+	 The Critic's Neuronal Network architecture is presented in Table \ref{tab:critic_arch}. A similar architecture was proposed in the original paper of Deep Deterministic Policy Gradient \cite{ddpg_2015}. 
+	 
+	 
+	 
+	  \begin{table}[h] 
+	\centering
+	\begin{tabular}{l l l l} 
+		\toprule 				
+		Layer (type)          &          Output Shape   &      Param \#   &  Connected to  \\
+		\midrule           
+		$states (InputLayer) $   &         (None, 84, 296, 9)  & 0 &    \\                          
+		$flatten\_1 (Flatten) $   &         (None, 223776) &      0 &          $states[0][0]   $    \\
+		$actions (InputLayer)$  &  (None, 3)    &        0      &             \\
+		$dense\_1 (Dense)  $ &  (None, 32)  & 7160864  &   $flatten\_1[0][0] $ \\
+        $dense\_3 (Dense)  $ & (None, 32) & 128 &  $actions[0][0]$ \\
+		$dense\_2 (Dense) $  & (None, 64) & 2112  &  $dense\_1[0][0] $ \\ 
+        $dense\_4 (Dense) $ & (None, 64) & 2112 &  $dense\_3[0][0]$ \\
+		$add\_1 (Add) $ & (None, 64) &  0  & $dense\_2[0][0] $ \\                   
+                                                                &&& $dense\_4[0][0] $ \\
+		$activation\_1 (Activation) $ & (None, 64) & 0 & $add\_1[0][0]$ \\
+		$q\_values (Dense) $ & (None, 1)& 65 & $activation\_1[0][0] $ \\
+		\midrule
+		\midrule
+Total params: 7,165,281 & & &\\
+Trainable params: 7,165,281 & & & \\
+Non-trainable params: 0 & & & \\
+
+		\midrule 
+		\bottomrule 
+	\end{tabular}
+	\smallskip 
+	\caption{Agent's Critic Neuronal Net Architecture.} 
+	\label{tab:critic_arch} 
+\end{table}
+	 
+	 The Critic's network architecture consists of two inputs for states and actions respectively. Since states are tensors, that input is flattened before hidden layers. Following there are three dense layers in a row with 32, 32 and 64 units respectively.
+	 
+	 It was used Adam \cite{adam_2014} for learning the network parameters with a learning rate of $10^{-4}$. It is used the rectified non-linearity \cite{relu_2011} for all layers. The final layer weights and biases are initialized from a uniform distribution
+	 % $[3 × 10^{−3}, 3 × 10^{−3}]$, to ensure the initial outputs for the policy are near zero.
  
 
 \begin{thebibliography}{1}
@@ -194,7 +296,13 @@ Marc G, Graves, Alex, Riedmiller, Martin, Fidjeland, Andreas K, Ostrovski, Georg
 \bibitem{mnist}
 
 	LeCun, Y. \& Cortes, C. (2010), 'MNIST handwritten digit database'.
- 
+	
+\bibitem{adam_2014}
+	Kingma, D. P., and J. L. Ba. "Adam: A method for stochastic optimization. arXiv 2014." arXiv preprint arXiv:1412.6980 (2014).
+	
+\bibitem{relu_2011}
+	Glorot, Xavier, Bordes, Antoine, and Bengio, Yoshua. Deep sparse rectifier networks. In Proceedings of the 14th International Conference on Artificial Intelligence and Statistics. JMLR W\& CP Volume, volume 15, pp. 315–323, 2011.
+	 
 \end{thebibliography}
 
 % This is a hand-made bibliography. If you want to use a BibTeX file, you're on your own ;-)
