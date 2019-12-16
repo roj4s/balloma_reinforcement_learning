@@ -83,10 +83,14 @@ class Environment:
 
         reward = 0
         next_state = np.zeros(self.state_size)
+        '''
         vector_size, angle, speed = np.array(transform_action(action,
                                                               self.action_range,
                                                               self.action_low),
                           dtype='uint8')
+
+        '''
+        vector_size, angle, speed = action[0], action[1], action[2]
 
         for i in range(0, self.action_repeat * 3, 3):
             put(vector_size, angle, speed, self.device_width, self.device_height)

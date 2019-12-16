@@ -129,7 +129,7 @@ class Actor:
         # Try different layer sizes, activations, add batch normalization, regularizers, etc.
 
         # Add final output layer with sigmoid activation
-        raw_actions = layers.Dense(units=self.action_size, activation='tanh',
+        raw_actions = layers.Dense(units=self.action_size, activation='sigmoid',
                                    name='raw_actions',
                                    kernel_initializer=RandomUniform(minval=-0.0003,
                                                                  maxval=0.0003),
