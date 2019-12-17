@@ -22,5 +22,6 @@ This work presents an actor-critic Reinforcement Learning setup, projected, impl
    - Install [Balloma](https://play.google.com/store/apps/details?id=net.blackriverstudios.balloma&hl=en) game in your android device.
    - Open Balloma and start game's first scene.
    - Run `python training.py`.
+   * Currently this project is only compatible with Samsung S8+ device.
 
    It will start inputting actions onto the device infered by the Actor's ConvNet. Scene is restarted atumatically after every episode ends. Also you can use the scripts in `plots` folder of this repo to see training progress through metrics.
