@@ -1,10 +1,8 @@
 # Deep Reinforcement Learning setup on Balloma Android game.
 
-DISCLARIMER: This project is under construction (i.e unstable).
+This work presents an actor-critic Reinforcement Learning setup, projected, implemented and executed, following the Deep Deterministic Policy Gradient approach. Two Neuronal Network architectures are presented for the actor and critic parts, being the actor a Convolutional Neuronal Network. A similar setup was applied in a 2D world game, however in this work it was applied to a 3D world game, in order to train an agent to play Balloma video game. Results demonstrate that the approach should be updated towards a policy in which exploration is favored over exploitation if cumulative reward evolution throughout training tends to decrease.
 
-The objective of this work is to construct a video game playing robot, through
-the use of Deep Reinforcement Learning techniques. This repository presents
-a PoC of a RL setup on Baloma Android Video Game.
+*Please read `capstone_report.pdf` for the insigts on what has been developed in this repository.
 
 ## What's been used here:
 
@@ -13,29 +11,16 @@ a PoC of a RL setup on Baloma Android Video Game.
    - Deep Determinist Policy Gradients.
    - OpenCV
 
-## What is currently working:
-
-   - Environment permits inputting actions to game running in a Android device.
-   - States are correctly captured (i.e game frames).
-   - Determine if task is done (i.e episode ends) (not elegant solution implemented though).
-   - Environment resetting (not elegant solution implemented though).
-   - DDPG Agent.
-
 ## I want to see something running:
+   - Install python 3.7.5.
    - Activate developer mode in your android device.
    - Plug android device to PC and make sure it is usable by adb `adb devices` shows online device.
    - Install lib dependencies `pip install -r requirements.txt`.
-   - Configure and start [minicap](https://github.com/openstf/minicap#usage) (that's actually easy).
+   - Clone [minicap](https://github.com/openstf/minicap#usage)
+   - Run minicap with `./run.sh autosize` (You need ndk-build for this)
+   - Forward requests to minicap with `adb forward tcp:1313 localabstract:minicap`
    - Install [Balloma](https://play.google.com/store/apps/details?id=net.blackriverstudios.balloma&hl=en) game in your android device.
-   - Open Balloma and start any scene.
-   - Run `python task.py`.
+   - Open Balloma and start game's first scene.
+   - Run `python training.py`.
 
-   It should start inputting random swipes onto the device. If scene completes for some reason (e.g the ball falls out the miniworld) it will restart automatically.
-
-## Next steps
-
-   - Implement object detector to extract elements in scenes that can be used to determine actual status of the game (e.g if a scene has been completed).
-   - Capture scene's elements that can be used to compute the reward function (Object detector and OCR might help here).
-   - Training script.
-   - Tune Actor-Critic neuronal networks.
-   - A lot other things that doesn't come to my mind right know.
+   It will start inputting actions onto the device infered by the Actor's ConvNet. Scene is restarted atumatically after every episode ends. Also you can use the scripts in `plots` folder of this repo to see training progress through metrics.
