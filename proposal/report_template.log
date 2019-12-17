@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2019.11.13)  22 NOV 2019 13:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2019.11.13)  17 DEC 2019 10:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -22,6 +22,7 @@ LaTeX Font Info:    Try loading font information for OT1+ptm on input line 373.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
+** ATTENTION: Single column mode is not typically used with IEEE publications.
 -- Using 8.5in x 11in (letter) paper.
 -- Using PDF output.
 \@IEEEnormalsizeunitybaselineskip=\dimen104
@@ -564,23 +565,84 @@ LaTeX Info: Redefining \addtolength on input line 81.
 \@centerbox=\box32
 \c@ROWcellindex@=\count113
 )
-(./report_template.aux)
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrextend.sty
+Package: scrextend 2015/10/03 v3.19a KOMA-Script package (extend other classes 
+with features of KOMA-Script classes)
+
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrkbase.sty
+Package: scrkbase 2015/10/03 v3.19a KOMA-Script package (KOMA-Script-dependent 
+basics and keyval usage)
+
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrbase.sty
+Package: scrbase 2015/10/03 v3.19a KOMA-Script package (KOMA-Script-independent
+ basics and keyval usage)
+
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrlfile.sty
+Package: scrlfile 2015/10/03 v3.19a KOMA-Script package (loading files)
+
+Package scrlfile, 2015/10/03 v3.19a KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+)))
+LaTeX Info: Redefining \textsubscript on input line 1277.
+) (./report_template.aux
+
+LaTeX Warning: Label `fig:loss' multiply defined.
+
+)
 \openout1 = `report_template.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8.00006> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8.00006> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.00012> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10.00012> not available
 
-(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95007> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10.95007> not available
+
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.39996> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.39996> not available
+
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <20.73596> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <20.73596> not available
+
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24.88806> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24.88806> not available
+
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <29.85608> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 28.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <29.85608> not available
+
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 28.
+ (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count114
 \scratchdimen=\dimen143
@@ -641,85 +703,126 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-(./report_template.toc)
-\tf@toc=\write3
-\openout3 = `report_template.toc'.
-
- (./report_template.lof
-LaTeX Font Info:    Try loading font information for U+msa on input line 1.
+(./report_template.toc
+LaTeX Font Info:    Try loading font information for U+msa on input line 5.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 1.
+LaTeX Font Info:    Try loading font information for U+msb on input line 5.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ))
+\tf@toc=\write3
+\openout3 = `report_template.toc'.
+
+
+(./report_template.lof)
 \tf@lof=\write4
 \openout4 = `report_template.lof'.
 
-
-(./report_template.lot)
+ (./report_template.lot)
 \tf@lot=\write5
 \openout5 = `report_template.lot'.
 
  [0{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<img/balloma_cover.jpeg, id=8, 301.125pt x 168.63pt>
+LaTeX Font Info:    Calculating math sizes for size <10.00012> on input line 59
+.
+ <img/balloma_cover.jpeg, id=8, 301.125pt x 168.63pt>
 File: img/balloma_cover.jpeg Graphic file (type jpg)
 
 <use img/balloma_cover.jpeg>
-Package pdftex.def Info: img/balloma_cover.jpeg used on input line 73.
-(pdftex.def)             Requested size: 202.44066pt x 113.37004pt.
+Package pdftex.def Info: img/balloma_cover.jpeg used on input line 76.
+(pdftex.def)             Requested size: 419.28139pt x 234.81956pt.
+ [1
 
-Overfull \hbox (3.57748pt too wide) detected at line 95
-\OML/cmm/m/it/10 Q[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 s[]; a[]\OT1/cmr/m/n/10 )
- = \U/msb/m/n/10 E[]\OT1/cmr/m/n/10 [\OML/cmm/m/it/10 r\OT1/cmr/m/n/10 (\OML/cm
-m/m/it/10 s[]; a[]\OT1/cmr/m/n/10 ) + \OML/cmm/m/it/10 ^^M\U/msb/m/n/10 E[]\OT1
-/cmr/m/n/10 [\OML/cmm/m/it/10 Q[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 s[]; a[]\OT1
-/cmr/m/n/10 )]]
- []
-
-[1
-
-
- <./img/balloma_cover.jpeg>]
-<img/balloma_scene.jpg, id=22, 1368.11125pt x 720.6925pt>
+ <./img/balloma_cover.jpeg>] [2]
+<img/balloma_scene.jpg, id=24, 1368.11125pt x 720.6925pt>
 File: img/balloma_scene.jpg Graphic file (type jpg)
 
 <use img/balloma_scene.jpg>
-Package pdftex.def Info: img/balloma_scene.jpg used on input line 136.
-(pdftex.def)             Requested size: 227.74333pt x 119.96483pt.
- [2 <./img/balloma_scene.jpg>] [3
+Package pdftex.def Info: img/balloma_scene.jpg used on input line 137.
+(pdftex.def)             Requested size: 471.68657pt x 248.47423pt.
+ [3 <./img/balloma_scene.jpg>] [4] [5]
+LaTeX Font Info:    Calculating math sizes for size <8.00006> on input line 204
+.
 
-]
-(./report_template.aux) ) 
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.00003> not available
+(Font)              size <5> substituted on input line 204.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.00003> not available
+(Font)              size <5> substituted on input line 204.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.00003> not available
+(Font)              size <5> substituted on input line 204.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<img/cumulative_reward.png, id=36, 462.528pt x 346.896pt>
+File: img/cumulative_reward.png Graphic file (type png)
+
+<use img/cumulative_reward.png>
+Package pdftex.def Info: img/cumulative_reward.png used on input line 279.
+(pdftex.def)             Requested size: 471.68657pt x 353.78159pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[6] [7 <./img/cumulative_reward.png>]
+<img/loss.png, id=46, 462.528pt x 346.896pt>
+File: img/loss.png Graphic file (type png)
+ <use img/loss.png>
+Package pdftex.def Info: img/loss.png used on input line 296.
+(pdftex.def)             Requested size: 471.68657pt x 353.78159pt.
+
+<img/action.png, id=47, 577.4373pt x 346.896pt>
+File: img/action.png Graphic file (type png)
+ <use img/action.png>
+Package pdftex.def Info: img/action.png used on input line 305.
+(pdftex.def)             Requested size: 471.68657pt x 283.37674pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[8 <./img/loss.png>] [9 <./img/action.png>] [10] (./report_template.aux)
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 0.99997pt have occurred.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 4110 strings out of 493029
- 56466 string characters out of 6136233
- 128851 words of memory out of 5000000
- 7555 multiletter control sequences out of 15000+600000
- 41576 words of font info for 86 fonts, out of 8000000 for 9000
+ 4836 strings out of 493029
+ 69354 string characters out of 6136233
+ 157497 words of memory out of 5000000
+ 8259 multiletter control sequences out of 15000+600000
+ 66998 words of font info for 140 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
- 38i,15n,24p,798b,218s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r
-.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report_template.pdf (4 pages, 1127188 bytes).
+ 47i,15n,37p,798b,288s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/urw/times/utmri8a.pfb>
+Output written on report_template.pdf (11 pages, 1271250 bytes).
 PDF statistics:
- 76 PDF objects out of 1000 (max. 8388607)
- 53 compressed objects within 1 object stream
+ 102 PDF objects out of 1000 (max. 8388607)
+ 67 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
