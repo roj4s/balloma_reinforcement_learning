@@ -91,11 +91,10 @@ class Environment:
 
         '''
         vector_size, angle, speed = action[0], action[1], action[2]
+        put(vector_size, angle, speed, self.device_width, self.device_height)
 
         for i in range(0, self.action_repeat * 3, 3):
-            put(vector_size, angle, speed, self.device_width, self.device_height)
 
-            time.sleep(0.5)
             while True:
                 frame  = self.asb.get_last_frame()
                 if frame is not None:
@@ -105,6 +104,8 @@ class Environment:
 
             reward += self.get_reward(np.copy(frame))
             next_state[:, :, i:i+3] = self.get_state_from_frame(np.copy(frame))
+            print("Captured photo")
+            time.sleep(0.8)
 
         done = self.is_done(np.copy(frame))
 
@@ -214,8 +215,6 @@ if __name__ == "__main__":
             ns = noise.sample()
             action = action + ns
 
-            #print(action)
-            #print(ns)
             v_size, angle, speed = np.array(transform_action(action, action_range, action_low),
                           dtype='uint8')
             ns, rw, done = env.step((v_size, angle, speed))
