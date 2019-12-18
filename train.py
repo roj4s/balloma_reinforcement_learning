@@ -10,19 +10,14 @@ def train(agent, env, num_episodes=10000000000000000000,
     if output_path is None:
         output_path = '/home/neo/dev/balloma_rl_agent/outputs'
 
-    weights_output_critic = os.path.join(output_path,
-                                  f"critic_weights_{timestmp}")
-    weights_output_actor = os.path.join(output_path,
-                                  f"actor_weights_{timestmp}")
-
-    output_path = os.path.join(output_path, f"log_{timestmp}")
+    log_output = os.path.join(output_path, f"log_{timestmp}")
 
     columns = ('episode', 'step', 'reward', 'loss', 'done', 'timestamp',
                'vector_size', 'angle', 'speed')
     col_frm = ",".join("{}" for _ in columns)
     col_frm += '\n'
 
-    with open(output_path, 'wt') as f:
+    with open(log_output, 'wt') as f:
         f.write(col_frm.format(*columns))
 
     for i_episode in range(1, num_episodes+1):
@@ -43,14 +38,13 @@ def train(agent, env, num_episodes=10000000000000000000,
             agent.step(action, reward, next_state, done)
             state = next_state
 
-            with open(output_path, 'at') as f:
+            with open(log_output, 'at') as f:
                 f.write(col_frm.format(i_episode, step_i, reward,
                                        agent.last_loss, done, step_timestamp,
                                        *action))
 
             step_i += 1
-            agent.actor_local.model.save_weights(weights_output_actor)
-            agent.critic_local.model.save_weights(weights_output_critic)
+            #agent.save_data(output_path, _id=timestmp)
 
             if done:
                 agent_memory_len = len(agent.memory)
@@ -61,7 +55,7 @@ def train(agent, env, num_episodes=10000000000000000000,
                 break
 
 if __name__ == "__main__":
-    from agent import DDPG
+    from agent import DDPG, DeepQAgent
     from environment import Environment
 
     done_comparison_data = {
@@ -88,6 +82,7 @@ if __name__ == "__main__":
     env = Environment(device_ref_elements_data={'done_comparison_data':
                                                 done_comparison_data,
                                                 'scores': scores})
-    agent = DDPG(env)
+    #agent = DDPG(env)
+    agent = DeepQAgent(env)
     train(agent, env, episode_seconds_constrain=45)
 

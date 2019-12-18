@@ -11,6 +11,147 @@ import math
 from ounoise import OUNoise
 
 
+class DeepQAgent:
+    """
+        Deep Q Learning based agent customized for Balloma Video Game domain
+        A Deep Network is the Q-Value function.
+        Action space equals to 359 (i.e possible angles of the ball moving vector)
+    """
+
+
+    def __init__(self, env):
+        """Initialize parameters and build model.
+            Params
+            ======
+            state_size (int): Frames set shape
+        """
+        self.session = K.get_session()
+        init = tf.global_variables_initializer()
+        self.session.run(init)
+        self.env = env
+        self.state_size = self.env.state_size
+        self.score = -math.inf
+        self.best_score = -math.inf
+        self.last_loss = math.inf
+        self.buffer_size = 100000
+        self.batch_size = 6
+        self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
+        self.gamma = 0.99
+        self.explore_start = 1.0
+        self.explore_stop = 0.01
+        self.decay_rate = 0.0001
+        self.learning_rate = 0.0001
+        self.vector_size = 100
+        self.delay = 500
+        self.current_step = 0
+        self.build_model()
+
+    def reset_episode(self):
+        self.total_reward = 0
+        state = self.env.reset()
+        self.last_state = state
+        return state
+
+    def build_model(self):
+        """Build a network that represents Q-Values states -> Q-Values."""
+        # Define input layer (states)
+        states = layers.Input(shape=self.state_size, name='states')
+
+        net = layers.Lambda(lambda x: x/255)(states)
+
+        # Add hidden layers
+        net = layers.Conv2D(filters=32, kernel_size=2,
+                            kernel_regularizer=l2(0.01),
+                            bias_regularizer=l2(0.01),
+                            activation='relu')(states)
+
+        net = layers.Conv2D(filters=32, kernel_size=2,
+                            kernel_regularizer=l2(0.01),
+                            bias_regularizer=l2(0.01),
+                            activation='relu')(net)
+
+        net = layers.Conv2D(filters=32, kernel_size=2,
+                            kernel_regularizer=l2(0.01),
+                            bias_regularizer=l2(0.01),
+                            activation='relu')(net)
+
+
+        net = layers.Dense(units=200, activation='relu')(net)
+        net = layers.Dense(units=200, activation='relu')(net)
+
+        Q_values = layers.Dense(units=359, activation='sigmoid',
+                                   name='Q_values')(net)
+
+        Q_values = layers.GlobalAveragePooling2D()(Q_values)
+
+        # Create Keras model
+        self.model = models.Model(inputs=states, outputs=Q_values)
+        self.model.summary()
+
+        # Define loss function using action value (Q value) gradients
+        Q_target = layers.Input(shape=(359,))
+        loss = K.mean(K.square(Q_target-Q_values))
+
+        # Incorporate any additional losses here (e.g. from regularizers)
+        # Define optimizer and training function
+        optimizer = optimizers.Adam(learning_rate=0.001)
+
+        updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
+        self.train_fn = K.function(inputs=[self.model.input, Q_target,
+                                           K.learning_phase()],
+                                   outputs=[self.model.output],
+                                   updates=updates_op)
+
+
+    def step(self, action, reward, next_state, done):
+        self.memory.add(self.last_state, action, reward, next_state, done)
+        self.total_reward += reward
+
+        if len(self.memory) > self.batch_size:
+            experiences = self.memory.sample()
+            self.learn(experiences)
+
+        self.last_state = next_state
+        self.current_step += 1
+
+    def act(self, state):
+        """Returns actions for given state(s) as per current policy."""
+
+        Q_values = self.model.predict(np.array([state]))[0]
+
+        # Whether to explore or exploit
+        explore_p = self.explore_stop + (self.explore_start
+                                    - self.explore_stop)*np.exp(-self.decay_rate*self.current_step)
+
+        angle = int(np.random.uniform() * 359)
+        if explore_p < np.random.rand():
+            angle = np.argmax(Q_values)
+
+        return np.array([self.vector_size, angle, self.delay])
+
+
+    def learn(self, experiences):
+        """Update policy and value parameters using given batch of experience tuples."""
+        # Convert experience tuples to separate arrays for each element (states, actions, rewards, etc.)
+        states = np.array([e.state for e in experiences if e is not None])
+        #actions = np.array([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1, self.action_size)
+        rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1, 1)
+        dones = np.array([e.done for e in experiences if e is not None]).astype(np.uint8).reshape(-1, 1)
+        next_states = np.array([e.next_state for e in experiences if e is not None])
+        self.score = rewards.mean()
+        self.best_score = max(self.score, self.best_score)
+
+        Q_targets_next = self.model.predict_on_batch([next_states])
+        Q_targets = rewards + self.gamma * np.max(Q_targets_next, axis=1)
+
+        print(Q_targets.shape)
+        print(Q_targets_next.shape)
+
+        self.train_fn([states, Q_targets, 1])
+
+        self.last_loss = np.mean(np.sqrt(np.max(Q_targets_next, axis=1)-Q_targets))
+
+
 class Critic:
     """Critic (Value) Model."""
 
