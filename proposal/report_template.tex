@@ -50,7 +50,8 @@ Capstone Project\\
 \IEEEpeerreviewmaketitle
 \begin{abstract}
 
-	This work presents an actor-critic Reinforcement Learning setup, projected, implemented and executed, following the Deep Deterministic Policy Gradient approach. Two Neuronal Network architectures are presented for the actor and critic parts, being the actor a Convolutional Neuronal Network. A similar setup was applied in a 2D world game, however in this work it was applied to a 3D world game, in order to train an agent to play Balloma video game. Results demonstrate that the approach should be updated towards a policy in which exploration is favored over exploitation if cumulative reward evolution throughout training tends to decrease. 
+
+This work presented two Reinforcement Learning setups, projected, implemented and executed, following the Deep Deterministic Policy Gradients \cite{ddpg_2015} and Deep Q-Learning approaches \cite{replay_buffer_2015}. Two Neuronal Network architectures are presented for the actor and critic parts, being the actor a Convolutional Neuronal Network. For Deep Q-Learning approach it was constructed a ConvNet that represents the Q-Value function and maps states to Q-Values that are used to select actions greedily as agent interacts more with environment without ever stopping exploration . Similar setups was applied on a 2D world game, however in this work it was applied to a 3D world game, in order to train an agent to play Balloma video game. Results demonstrate that the approach should be updated towards a policy in which exploration is favored over exploitation if cumulative reward evolution throughout training tends to decrease. 
 	
 \end{abstract}
 
@@ -182,17 +183,21 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
 	
 	  \section{Benchmark Model}
 	  
-	  Previous researches have addressed video game playing agents with reinforcement learning. Mnih et al.  \cite{replay_buffer_2015} created Atari video game playing robots trough the use of an adaptation to Deep Q-Learning. This approach is considered as Deep Reinforcement Learning since makes use of neuronal networks to map states to actions directly. The method was tested on 49 Atari games assessing reward evolution throughout training. It was achieved professional human players comparable performance. 
+	  Previous researches have addressed video game playing agents with reinforcement learning. Mnih et al.  \cite{replay_buffer_2015} created Atari video game playing robots trough the use of an adaptation to Deep Q-Learning. This approach is considered as Deep Reinforcement Learning since makes use of neuronal networks to map states to Q-values directly. The method was tested on 49 Atari games assessing reward evolution throughout training. It was achieved professional human players comparable performance. 
 	  
 	  Deep Deterministic Policy Gradients \cite{ddpg_2015}, the method presented in this work, was used by its authors to create an agent that plays Torc, a racing video game. They compared effectiveness of the method when applied on low-dimensional features like acceleration, braking and steering and with high-order features like pixel representations (i.e game raw frames), assessing reward evolution throughout training. It was demonstrated by experimentation that similar performance is attained for both features presentations.
+
+	In this work both approaches has been implemented and applied to Balloma Video Game playing agent. More details are presented in coming sections.
 	  
 	  \section{Results}
 	  
-	  It was implemented a Reinforcement Learning setup composed by an agent, represented by a Convolutional Neuronal Network (ConvNet) and an environment, representative of Balloma Video Game, driven by an iterative procedure in which at every step the agent interacts with the environment and information from that interaction is used to adjust the agent's behavior with the goal of incrementing the reward the agent obtains when interacting with the environment. 
+	  It was implemented two Reinforcement Learning setups composed by an agent, represented by a Convolutional Neuronal Network (ConvNet) and an environment, representative of Balloma Video Game, driven by an iterative procedure in which at every step the agent interacts with the environment and information from that interaction is used to adjust the agent's behavior with the goal of incrementing the reward the agent obtains when interacting with the environment. 
 	  
-	 The RL setup follows and Actor-Critic approach in which game actions are inferred by a ConvNet adjusted from experiences obtained by interaction with Balloma Video Game. Each experience is compound of an action, reward and game scene frame, obtained by inputting the inferred action into the video game running in an android device and capturing the rendered frame. Another Neuronal Network, called the Critic, evaluates how well the Actor is performing and outputs a gradient that is used to adjust the Actor towards minimizing the loss and increasing the reward obtained from environment.
+	 The first setup follows the Actor-Critic Deep Deterministic Policy Gradient, approach in which game actions are inferred by a ConvNet adjusted from experiences obtained by interaction with Balloma Video Game. Each experience is compound of an action, reward and game scene frame, obtained by inputting the inferred action into the video game running in an android device and capturing the rendered frame. Another Neuronal Network, called the Critic, evaluates how well the Actor is performing and outputs a gradient that is used to adjust the Actor towards minimizing the loss and increasing the reward obtained from environment.
 	 
 	 For each model there are a local and a target model, the former is updated on each training iteration in a approximation with a supervised learning using the target as the ground truth. On each model fit the target is soft-updated by increasing its weights based on the local model rather then exactly copying it.
+	 
+	 It was also implemented a Deep Q Network \cite{deep_q_n} that represents the Q-Value function and maps states to Q-Values. Such network follows the same architecture as the Actor ConvNet as presented in Table \ref{tab:actor_arch}. Since this approach is not compatible with continuous valued actions two changes are applied with respect to DDPG implementation, in order to make it compatible: \textit{a)} vector size and swipe speed are fixed (i.e not inferred by the network), \textit{b)} only angle is inferred by the DQN. It was considered that angle was action's most prominent feature.  
 	 
 	 \subsection{Actor ConvNet}
 	 
@@ -225,7 +230,7 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
 		\bottomrule 
 	\end{tabular}
 	\smallskip 
-	\caption{Agent's Actor ConvNet Architecture.} 
+	\caption{Agent's Actor and Deep Q Network ConvNet Architecture.} 
 	\label{tab:actor_arch} 
 \end{table}
 
@@ -281,15 +286,15 @@ Non-trainable params: 0 & & & \\
 		\label{fig:reward}
 	\end{figure}
 	
-	 In order to fit Actor and Critic models it was executed an iterative process in which each iteration is called as episode. At each episode the Actor's model is used to select actions that are applied to video game running in an android device, through \textit{adb}. Some random noise is added to such action in order to provide exploration. 
+	 In order to fit the Actor and Critic models it was executed an iterative process in which each iteration is called as episode. At each episode the Actor's model is used to select actions that are applied to video game running in an android device, through \textit{adb}. Some random noise is added to such action in order to provide exploration.
+	 
+	 For DQN actions are selected following a Greedy in the Limit with Infinite Exploration approach. A coefficient epsilon controls exploration-explotations probabilities, used to decide when to select a random action or the action that maximizes reward, based on the Q-Network prediction. At each step, epsilon is decreased with a decay rate of 0.001.
 	 
 	 On each step of an episode, an experience is gathered containing: \textit{a)} the state before action is performed, \textit{b)} the action itself, \textit{c)} the reward returned by environment after applying such action and \textit{d)} the state after the action was executed. Such experiences are stored in a replay buffer \cite{rep_buffer}.
 	 
-	  At the end of each episode, if the replay buffer contains at least 16 experiences a new model fit iteration is executed. A batch of 16 experiences are randomly selected from buffer and inputted into the Critic model in order to obtain action gradients. Such gradients are used to compute the loss and fit the Actor model.
-	  
-	 
-	
-	For each episode, it is computed a cumulative reward as the sum of each step reward. Figure \ref{fig:reward} presents evolution of cumulative reward throughout training and the mean for 50 episodes. The trends indicates a rather random or erratic behavior, in which reward is not enhanced between subsequent episodes. In every case, tendency is to lower rewards as more episodes passed.
+	  At the end of each episode, if the replay buffer contains at least 16 experiences a new model fit iteration is executed. A batch of 16 experiences are randomly selected from buffer and inputted into the Critic model in order to obtain action gradients in the DDPG approach. Such gradients are used to compute the loss and fit the Actor model.
+	  	  
+	For each episode, it is computed a cumulative reward as the sum of each step reward. Figure \ref{fig:reward} presents evolution of cumulative reward throughout training and the mean for 50 episodes, for the DDPG setup. The trends indicates a rather random or erratic behavior, in which reward is not enhanced between subsequent episodes. In every case, tendency is to lower rewards as more episodes passed.
 	
 	\begin{figure}[!h]
 		\centering
@@ -311,7 +316,7 @@ Non-trainable params: 0 & & & \\
 	
 	\section{Conclusions}
 	
-	This work presented an actor-critic Reinforcement Learning setup, projected, implemented and executed, following the Deep Deterministic Policy Gradients \cite{ddpg_2015} approach. Such setup was used to train an agent to play Balloma video game. 
+	This work presented two Reinforcement Learning setups, projected, implemented and executed, following the Deep Deterministic Policy Gradients \cite{ddpg_2015} and Deep Q-Learning approaches \cite{replay_buffer_2015}. Such setups was used to train an agent to play Balloma video game. 
 	
 	As experimentation demonstrated, the strategy followed did not presented well results. Cumulative reward evolution throughout training presented a trend towards decrease in subsequent episodes. Loss did not decreased as expected throughout training. Also action parameter's values trends to exploitation with no significant return in reward increase, in which case exploration would have been the expected behavior.
 	
@@ -355,6 +360,9 @@ Marc G, Graves, Alex, Riedmiller, Martin, Fidjeland, Andreas K, Ostrovski, Georg
 	\bibitem{rep_buffer} 
 	
 	Wawrzynski, Paweł and Tanwani, Ajay Kumar. Autonomous reinforcement learning with experience replay. Neural Networks, 41:156–167, 2013.
+	
+	\bibitem{deep_q_n}
+	Mnih, Volodymyr, Kavukcuoglu, Koray, Silver, David, Graves, Alex, Antonoglou, Ioannis, Wierstra, Daan, and Riedmiller, Martin. Playing atari with deep reinforcement learning. arXiv preprint arXiv:1312.5602, 2013.
 	 
 \end{thebibliography}
 
