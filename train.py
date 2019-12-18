@@ -52,7 +52,12 @@ def train(agent, env, num_episodes=10000000000000000000,
                       "(best = {:7.3f})".format(i_episode, agent_memory_len, agent.score,
                                                agent.best_score,
                                                ), end="")
+
                 break
+
+        if len(agent.memory) > agent.batch_size:
+                    experiences = agent.memory.sample()
+                    agent.learn(experiences)
 
 if __name__ == "__main__":
     from agent import DDPG, DeepQAgent
