@@ -34,7 +34,7 @@ class DeepQAgent:
         self.best_score = -math.inf
         self.last_loss = math.inf
         self.buffer_size = 100000
-        self.batch_size = 6
+        self.batch_size = 16
         self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
         self.gamma = 0.99
         self.explore_start = 1.0
@@ -79,37 +79,21 @@ class DeepQAgent:
         net = layers.Dense(units=200, activation='relu')(net)
         net = layers.Dense(units=200, activation='relu')(net)
 
-        Q_values = layers.Dense(units=359, activation='sigmoid',
+        net = layers.Dense(units=359, activation='sigmoid',
                                    name='Q_values')(net)
 
-        Q_values = layers.GlobalAveragePooling2D()(Q_values)
+        Q_values = layers.GlobalAveragePooling2D()(net)
 
         # Create Keras model
         self.model = models.Model(inputs=states, outputs=Q_values)
+        optimizer = optimizers.Adam(learning_rate=0.001)
+        self.model.compile(optimizer=optimizer, loss='mse')
         self.model.summary()
 
-        # Define loss function using action value (Q value) gradients
-        Q_target = layers.Input(shape=(359,))
-        loss = K.mean(K.square(Q_target-Q_values))
-
-        # Incorporate any additional losses here (e.g. from regularizers)
-        # Define optimizer and training function
-        optimizer = optimizers.Adam(learning_rate=0.001)
-
-        updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
-        self.train_fn = K.function(inputs=[self.model.input, Q_target,
-                                           K.learning_phase()],
-                                   outputs=[self.model.output],
-                                   updates=updates_op)
-
-
     def step(self, action, reward, next_state, done):
+        action = action[1]
         self.memory.add(self.last_state, action, reward, next_state, done)
         self.total_reward += reward
-
-        if len(self.memory) > self.batch_size:
-            experiences = self.memory.sample()
-            self.learn(experiences)
 
         self.last_state = next_state
         self.current_step += 1
@@ -134,7 +118,8 @@ class DeepQAgent:
         """Update policy and value parameters using given batch of experience tuples."""
         # Convert experience tuples to separate arrays for each element (states, actions, rewards, etc.)
         states = np.array([e.state for e in experiences if e is not None])
-        #actions = np.array([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1, self.action_size)
+        actions = np.array([e.action for e in experiences if e is not
+                            None])
         rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1, 1)
         dones = np.array([e.done for e in experiences if e is not None]).astype(np.uint8).reshape(-1, 1)
         next_states = np.array([e.next_state for e in experiences if e is not None])
@@ -144,12 +129,16 @@ class DeepQAgent:
         Q_targets_next = self.model.predict_on_batch([next_states])
         Q_targets = rewards + self.gamma * np.max(Q_targets_next, axis=1)
 
-        print(Q_targets.shape)
-        print(Q_targets_next.shape)
 
-        self.train_fn([states, Q_targets, 1])
+        Q_values = self.model.predict_on_batch([states])
 
-        self.last_loss = np.mean(np.sqrt(np.max(Q_targets_next, axis=1)-Q_targets))
+        for i in range(states.shape[0]):
+            for j in range(actions.shape[0]):
+                ai = actions[j]
+                Q_values[i, ai] = Q_targets[i, j]
+
+        d = self.model.fit(states, Q_values)
+        self.last_loss = d.history['loss'][0]
 
 
 class Critic:
