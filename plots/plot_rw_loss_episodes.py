@@ -18,13 +18,14 @@ def plot(file_addr):
 
         for i, vv in enumerate(v):
             val = d.groupby('episode').mean()[vv]
-            axes[i].plot(x, val)
+            axes[i].plot(x, val, label="Total")
             rolling = val.rolling(50).mean()
-            axes[i].plot(x, rolling)
+            axes[i].plot(x, rolling, label="Mean (50 ep)")
             axes[i].set_ylabel(vv)
             axes[i].grid()
 
         axes[-1].set_xlabel('Episode')
+        plt.legend(prop={'size': 8})
         plt.pause(0.5)
 
 

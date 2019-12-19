@@ -19,7 +19,7 @@
 \usepackage{stackengine}
 
 \usepackage{scrextend}
-\changefontsizes{12pt}
+\changefontsizes{11pt}
 
 \hyphenation{op-tical net-works semi-conduc-tor} % Corrects some bad hyphenation 
 
@@ -51,7 +51,7 @@ Capstone Project\\
 \begin{abstract}
 
 
-This work presented two Reinforcement Learning setups, projected, implemented and executed, following the Deep Deterministic Policy Gradients \cite{ddpg_2015} and Deep Q-Learning approaches \cite{replay_buffer_2015}. Two Neuronal Network architectures are presented for the actor and critic parts, being the actor a Convolutional Neuronal Network. For Deep Q-Learning approach it was constructed a ConvNet that represents the Q-Value function and maps states to Q-Values that are used to select actions greedily as agent interacts more with environment without ever stopping exploration . Similar setups was applied on a 2D world game, however in this work it was applied to a 3D world game, in order to train an agent to play Balloma video game. Results demonstrate that the approach should be updated towards a policy in which exploration is favored over exploitation if cumulative reward evolution throughout training tends to decrease. 
+This work presented two Reinforcement Learning setups, projected, implemented and executed, following the Deep Deterministic Policy Gradients (DDPG) \cite{ddpg_2015} and Deep Q-Learning (DQN) \cite{replay_buffer_2015} approaches. Two Neuronal Network architectures are presented for the actor and critic parts, being the actor a Convolutional Neuronal Network. For Deep Q-Learning approach it was constructed a ConvNet that represents the Q-Value function and maps states to Q-Values that are used to select actions greedily as agent interacts more with environment without ever stopping exploration. Similar setups were applied on a 2D world game, however in this work it was applied to a 3D world game, in order to train an agent to play Balloma video game. Results demonstrate that Deep Q-Learning performed better than DDPG, also approaches should be tunned towards a policy in which exploration is favored over exploitation if cumulative reward evolution throughout training tends to decrease. 
 	
 \end{abstract}
 
@@ -72,9 +72,11 @@ Balloma is a single-player, android video game, developed by Black River Studios
 % option should be used if it is desired that the figures are to be
 % displayed while in draft mode.
 %
+
+
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.8\columnwidth]{img/balloma_cover.jpeg} 
+\includegraphics[scale=0.9]{img/balloma_cover.jpeg} 
 \caption{Balloma splash screen.}
 \label{fig_sim}
 \end{figure}
@@ -135,7 +137,7 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
    
    \begin{figure}[!h]
 		\centering
-		\includegraphics[width=0.9\columnwidth]{img/balloma_scene.jpg} 
+		\includegraphics[scale=0.3]{img/balloma_scene.jpg} 
 		\caption{Balloma's scene sample. Elements of scene are: a) The ball (blue), b) Floating elements (green), c) Score records (red), d) Target position (yellow)}
 		\label{fig_scene}
 	\end{figure}
@@ -190,6 +192,24 @@ Training follows an episodic process similar to Q-Learning. In each episode a se
 	In this work both approaches has been implemented and applied to Balloma Video Game playing agent. More details are presented in coming sections.
 	  
 	  \section{Results}
+	  
+	  \begin{figure}[t]
+\centering
+\begin{minipage}{0.45\textwidth}
+	\includegraphics[scale=0.55]{img/cumulative_reward.png}
+	\caption{Cumulative Reward evolution through episodes on DDPG approach.}
+	\label{fig:reward}
+
+	\end{minipage}
+	\hspace{0.2cm}
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.55]{img/rewardDQN.png}
+		\caption{Cumulative Reward evolution through episodes on Deep Q-Learning approach.}
+		\label{fig:reward_1}
+		\centering
+	\end{minipage}	
+	\end{figure} 
 	  
 	  It was implemented two Reinforcement Learning setups composed by an agent, represented by a Convolutional Neuronal Network (ConvNet) and an environment, representative of Balloma Video Game, driven by an iterative procedure in which at every step the agent interacts with the environment and information from that interaction is used to adjust the agent's behavior with the goal of incrementing the reward the agent obtains when interacting with the environment. 
 	  
@@ -278,51 +298,78 @@ Non-trainable params: 0 & & & \\
 	 It was used Adam \cite{adam_2014} for learning the network parameters with a learning rate of $10^{-4}$. It is used the rectified non-linearity \cite{relu_2011} for all layers. The final layer weights and biases are initialized from a uniform distribution $[3 * 10^{-3}, 3 * 10^{-3}]$, to ensure the initial outputs for the policy are near zero.
 	 
 	 \subsection{Training}
-	 
-	  \begin{figure}[!h]
+
+
+	 \begin{figure}[t]
+\centering
+\begin{minipage}{0.4\textwidth}
+	\includegraphics[scale=0.5]{img/loss.png}
+	\caption{Action gradient loss evolution through subsequent steps on DDPG approach.}
+	\label{fig:loss}
+
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.4\textwidth}
 		\centering
-		\includegraphics[width=0.9\columnwidth]{img/cumulative_reward.png} 
-		\caption{Cumulative Reward evolution through episodes.}
-		\label{fig:reward}
+		\includegraphics[scale=0.5]{img/lossDQN.png}
+		\caption{Q-Value loss evolution through subsequent steps on Deep Q-Learning approach.}
+		\label{fig:loss_1}
+		\centering
+	\end{minipage}	
 	\end{figure}
+	 
+%	  \begin{figure}[!h]
+%		\centering
+%		\includegraphics[width=0.9\columnwidth]{img/cumulative_reward.png} 
+%		\caption{Cumulative Reward evolution through episodes.}
+%		\label{fig:reward}
+%	\end{figure}
 	
 	 In order to fit the Actor and Critic models it was executed an iterative process in which each iteration is called as episode. At each episode the Actor's model is used to select actions that are applied to video game running in an android device, through \textit{adb}. Some random noise is added to such action in order to provide exploration.
 	 
 	 For DQN actions are selected following a Greedy in the Limit with Infinite Exploration approach. A coefficient epsilon controls exploration-explotations probabilities, used to decide when to select a random action or the action that maximizes reward, based on the Q-Network prediction. At each step, epsilon is decreased with a decay rate of 0.001.
 	 
+	 \begin{figure}[!h]
+		\centering
+		\includegraphics[width=0.9\columnwidth]{img/action.png} 
+		\caption{Action parameter's values evolution throughout training on DDPG approach.}
+		\label{fig:actiosDDPG}
+	\end{figure}
+	 
 	 On each step of an episode, an experience is gathered containing: \textit{a)} the state before action is performed, \textit{b)} the action itself, \textit{c)} the reward returned by environment after applying such action and \textit{d)} the state after the action was executed. Such experiences are stored in a replay buffer \cite{rep_buffer}.
+	 
+	 
+	 \begin{figure}
+		\centering
+		\includegraphics[scale=0.8]{img/angleDQN.png} 
+		\caption{Action's angle parameter values evolution throughout training on Deep Q-Learning approach.}
+		\label{fig:angledqn}
+	\end{figure}
 	 
 	  At the end of each episode, if the replay buffer contains at least 16 experiences a new model fit iteration is executed. A batch of 16 experiences are randomly selected from buffer and inputted into the Critic model in order to obtain action gradients in the DDPG approach. Such gradients are used to compute the loss and fit the Actor model.
 	  	  
-	For each episode, it is computed a cumulative reward as the sum of each step reward. Figure \ref{fig:reward} presents evolution of cumulative reward throughout training and the mean for 50 episodes, for the DDPG setup. The trends indicates a rather random or erratic behavior, in which reward is not enhanced between subsequent episodes. In every case, tendency is to lower rewards as more episodes passed.
+	For each episode, it is computed a cumulative reward as the sum of each step reward. Figure \ref{fig:reward} presents evolution of cumulative reward throughout training and the mean for 50 episodes, for the DDPG setup. The trends indicates a rather random or erratic behavior, in which reward is not enhanced between subsequent episodes, tendency is to lower rewards as more episodes passed. On the other hand, as seen in Figure \ref{fig:reward_1}, for the Deep Q-Learning approach higher reward scores were attained, some even positive which does not happens for DDPG. Also reward's trend for DQN is to stability or increase rather than decline.
 	
-	\begin{figure}[!h]
-		\centering
-		\includegraphics[width=0.9\columnwidth]{img/loss.png} 
-		\caption{Action gradient loss evolution through subsequent steps.}
-		\label{fig:loss}
-	\end{figure}
 	
-	Figure \ref{fig:loss} presents evolution of Actor's model loss throughout training, for each step. Since model's weights are not reseted at every step or new episode it is expected that loss will tend to decrease. However it gravitates around zero, decreasing and increasing almost evenly.
 	
-	\begin{figure}[!h]
-		\centering
-		\includegraphics[width=0.9\columnwidth]{img/action.png} 
-		\caption{Action parameter's values evolution throughout training.}
-		\label{fig:loss}
-	\end{figure}
+	Figure \ref{fig:loss} presents evolution of Actor's model loss throughout training, for each step, on the DDPG approach. Since model's weights are not reseted at every step or new episode it is expected that loss will tend to decrease. However it gravitates around zero, decreasing and increasing almost evenly.
 	
-	Figure \ref{fig:loss} presents the evolution of the parameter's values that compounds actions. Here the trends are to increment and stabilization. This behavior might be caused by the distribution of the exploration noise applied, it should be studied if the noise strategy selected is adequate for the setup in this work.
+	Figure \ref{fig:loss_1} presents evolution of agent's model loss throughout training, for each step, on the Deep Q-Learning approach. Different than with DDPG in this case it is more evident a pattern towards decline as further episodes are experienced.
+	
+	
+	Figure \ref{fig:loss} presents the evolution of the parameter's values that compounds actions on the DDPQ approach. Here the trends are to increment and stabilization. This behavior might be caused by the distribution of the exploration noise applied, it should be studied if the noise strategy selected is adequate for the setup in this work.
+	
+	Figure \ref{fig:angledqn} shows mean angle values for episode. Here exploration is benefited over exploitation which is recommended since reward stills does not presents a steady growth at the moment graphs were plotted. Although exploration is favored, it eventually starts to be spotted a pattern, which can be interpreted as the agent learning a sequence of actions.
 	
 	\section{Conclusions}
 	
 	This work presented two Reinforcement Learning setups, projected, implemented and executed, following the Deep Deterministic Policy Gradients \cite{ddpg_2015} and Deep Q-Learning approaches \cite{replay_buffer_2015}. Such setups was used to train an agent to play Balloma video game. 
 	
-	As experimentation demonstrated, the strategy followed did not presented well results. Cumulative reward evolution throughout training presented a trend towards decrease in subsequent episodes. Loss did not decreased as expected throughout training. Also action parameter's values trends to exploitation with no significant return in reward increase, in which case exploration would have been the expected behavior.
+	As experimentation demonstrated, Deep Q-Learning presented better results than DDPG. Cumulative reward evolution throughout training presented a trend towards decrease in subsequent episodes for DDPG however for DQN episode's mean reward throughout training tends to stability and growth rather than decrease. Loss did not decreased as expected throughout training for DDPG and decreased steadily for DQN. Also, for DDPG, action parameter's values trends to exploitation with no significant return in reward increase, in which case exploration would have been the expected behavior, nevertheless for DQN a pattern starts to appear towards more recent episodes which can be interpreted as the agent learning a sequence of actions.
 	
 	It is worth noting that the approach this work follows was previously used in a similar setup, in which an agent was trained to play video games. However, different than in this work, previous experiences was applied to a 2D world game and in this case it is being applied to a 3D world game.
 	
-	In future works, further experimentation should be performed. New models architectures can be experimented with dropout, normalization, pooling and different weight initialization strategies, to avoid actions stagnation and favor exploration. Also new noise increasing strategies can be explored.
+	In future works, further experimentation should be performed. New models architectures can be experimented with dropout, normalization, pooling and different weight initialization strategies, to avoid actions stagnation and favor exploration. Also new noise modifying strategies can be explored.
  
 
 \begin{thebibliography}{1}
