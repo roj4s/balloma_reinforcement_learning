@@ -27,7 +27,7 @@ class Environment:
         self.state_frame_height = self.visible_state_area_data[1] - self.visible_state_area_data[0]
         self.device_evt = Event()
         self.state_size = (self.state_frame_height,
-                           self.state_frame_width, 3 * self.action_repeat)
+                           self.state_frame_width, self.action_repeat)
         self.digits_matcher = DigitsMatcher(self.device_ref_elements_data['scores']['digits_mask_addr'])
         self.asb.run()
         self.episode_start_time = None
@@ -83,28 +83,19 @@ class Environment:
 
         reward = 0
         next_state = np.zeros(self.state_size)
-        '''
-        vector_size, angle, speed = np.array(transform_action(action,
-                                                              self.action_range,
-                                                              self.action_low),
-                          dtype='uint8')
 
-        '''
         vector_size, angle, speed = action[0], action[1], action[2]
         put(vector_size, angle, speed, self.device_width, self.device_height)
 
-        for i in range(0, self.action_repeat * 3, 3):
+        for i in range(0, self.action_repeat):
 
             while True:
                 frame  = self.asb.get_last_frame()
                 if frame is not None:
                     break
 
-            #cv2.imwrite(f'/tmp/frames/frame_{j}.png', np.copy(frame))
-
             reward += self.get_reward(np.copy(frame))
-            next_state[:, :, i:i+3] = self.get_state_from_frame(np.copy(frame))
-            print("Captured photo")
+            next_state[:, :, i] = self.get_state_from_frame(np.copy(frame))
             time.sleep(0.8)
 
         done = self.is_done(np.copy(frame))
@@ -113,7 +104,9 @@ class Environment:
 
     def get_state_from_frame(self, frame):
         y1, y2, x1, x2 = self.visible_state_area_data
-        return frame[y1: y2, x1: x2]
+        frm = frame[y1: y2, x1: x2, :]
+        frm = cv2.cvtColor(frm, cv2.COLOR_BGR2GRAY)
+        return frm
 
 
     def is_done(self, frame):
@@ -150,11 +143,10 @@ class Environment:
             if frame is not None:
                 break
 
-
         time.sleep(1)
 
-        for i in range(0, self.action_repeat * 3, 3):
-            state[:, :, i:i+3] = self.get_state_from_frame(np.copy(frame))
+        for i in range(0, self.action_repeat):
+            state[:,:,i] = self.get_state_from_frame(np.copy(frame))
 
         return state
 
