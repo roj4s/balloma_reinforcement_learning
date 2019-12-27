@@ -1,14 +1,14 @@
 \contentsline {section}{\numberline {I}Introduction}{1}
-\contentsline {section}{\numberline {II}Deep Reinforcement Learning}{2}
+\contentsline {section}{\numberline {II}Deep Reinforcement Learning}{1}
 \contentsline {section}{\numberline {III}Balloma video game}{3}
-\contentsline {section}{\numberline {IV}Environment}{4}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}States}{4}
+\contentsline {section}{\numberline {IV}Environment}{3}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}States}{3}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Actions}{4}
 \contentsline {section}{\numberline {V}Reward function}{4}
-\contentsline {section}{\numberline {VI}Benchmark Model}{5}
+\contentsline {section}{\numberline {VI}Benchmark Model}{4}
 \contentsline {section}{\numberline {VII}Results}{5}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-A}}Actor ConvNet}{6}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-A}}Actor ConvNet}{5}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-B}}Critic Neuronal Network}{6}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-C}}Training}{7}
-\contentsline {section}{\numberline {VIII}Conclusions}{8}
-\contentsline {section}{References}{8}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-C}}Training}{6}
+\contentsline {section}{\numberline {VIII}Conclusions}{9}
+\contentsline {section}{References}{9}

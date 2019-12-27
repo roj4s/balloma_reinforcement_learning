@@ -1,5 +1,8 @@
 \contentsline {figure}{\numberline {1}{\ignorespaces Balloma splash screen.}}{1}
 \contentsline {figure}{\numberline {2}{\ignorespaces Balloma's scene sample. Elements of scene are: a) The ball (blue), b) Floating elements (green), c) Score records (red), d) Target position (yellow)}}{3}
-\contentsline {figure}{\numberline {3}{\ignorespaces Cumulative Reward evolution through episodes.}}{7}
-\contentsline {figure}{\numberline {4}{\ignorespaces Action gradient loss evolution through subsequent steps.}}{9}
-\contentsline {figure}{\numberline {5}{\ignorespaces Action parameter's values evolution throughout training.}}{10}
+\contentsline {figure}{\numberline {3}{\ignorespaces Cumulative Reward evolution through episodes on DDPG approach.}}{5}
+\contentsline {figure}{\numberline {4}{\ignorespaces Cumulative Reward evolution through episodes on Deep Q-Learning approach.}}{5}
+\contentsline {figure}{\numberline {5}{\ignorespaces Action gradient loss evolution through subsequent steps on DDPG approach.}}{7}
+\contentsline {figure}{\numberline {6}{\ignorespaces Q-Value loss evolution through subsequent steps on Deep Q-Learning approach.}}{7}
+\contentsline {figure}{\numberline {7}{\ignorespaces Action parameter's values evolution throughout training on DDPG approach.}}{7}
+\contentsline {figure}{\numberline {8}{\ignorespaces Action's angle parameter values evolution throughout training on Deep Q-Learning approach.}}{8}
