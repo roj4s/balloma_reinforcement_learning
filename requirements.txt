@@ -168,7 +168,7 @@ svn==0.3.46
 table==0.0.4
 tables==3.5.1
 tensorboard==1.15.0
-tensorflow==2.0.0
+tensorflow==2.0.1
 tensorflow-estimator==1.15.0
 tensorflow-gpu==1.14.0
 termcolor==1.1.0
