@@ -92,7 +92,7 @@ cachetools==3.1.1
 certifi==2019.9.11
 cffi==1.12.2
 chardet==3.0.4
-cryptography==2.6.1
+cryptography==3.2
 cycler==0.10.0
 Deprecated==1.2.6
 dlib==19.17.0
