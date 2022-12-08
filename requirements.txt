@@ -89,7 +89,7 @@ azure-storage-queue==1.4.0
 bcrypt==3.1.7
 cached-property==1.5.1
 cachetools==3.1.1
-certifi==2019.9.11
+certifi==2022.12.7
 cffi==1.12.2
 chardet==3.0.4
 cryptography==2.6.1
